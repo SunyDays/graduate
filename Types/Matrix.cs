@@ -74,7 +74,7 @@ namespace Types
         private void CheckIndices(int rowIndex, int columnIndex)
         {
             CheckRowIndex(rowIndex);
-//            CheckColumnIndex(columnIndex);
+            CheckColumnIndex(columnIndex);
         }
 
         private void CheckRowIndex(int rowIndex)
@@ -190,10 +190,6 @@ namespace Types
         {
             CheckColumnLength(column.Count());
 
-//            var vector = new Vector<T>(column);
-//            for (int r = 0; r < RowsCount; r++)
-//                _matrix[r].AddElement(column[r]);
-
             _matrix.Zip(column, (row, item) => row.AddElement(item));
 
             ColumnsCount++;
@@ -210,15 +206,11 @@ namespace Types
 
         public Matrix<T> GetColumns(int index, int count)
         {
-//            CheckColumnIndex(index);
-//            CheckColumnIndex(index + count);
-
             return new Matrix<T>(_matrix.Select(row => row.GetSubVector(index, count)));
         }
 
         public Matrix<T> InsertColumn(int index, IEnumerable<T> column)
         {
-//            CheckColumnIndex(index == 0 ? index : index - 1);
             CheckColumnLength(column.Count());
 
             var vector = new Vector<T>(column);
@@ -232,8 +224,6 @@ namespace Types
 
         public Matrix<T> RemoveColumn(int index)
         {
-//            CheckColumnIndex(index);
-
             _matrix.ForEach(row => row.RemoveElement(index));
             ColumnsCount--;
 
@@ -242,11 +232,7 @@ namespace Types
 
         public Matrix<T> RemoveColumns(int index, int count)
         {
-//            CheckColumnIndex(index);
-//            CheckColumnIndex(index + count);
-
             _matrix.ForEach(row => row.RemoveElements(index, count));
-
             ColumnsCount -= count;
 
             return this;
@@ -254,7 +240,6 @@ namespace Types
 
         public Matrix<T> ReplaceColumn(int index, IEnumerable<T> column)
         {
-//            CheckColumnIndex(index);
             CheckColumnLength(column.Count());
 
             RemoveColumn(index);
