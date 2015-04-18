@@ -6,9 +6,10 @@ using Helpers;
 using Modeling;
 using Types;
 
-namespace GraduationProject
+namespace Main
 {
-    class MainClass    {
+    class MainClass
+    {
         public static void Main(string[] args)
         {
             if (args.Length != 1)

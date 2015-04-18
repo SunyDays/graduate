@@ -10,11 +10,11 @@ namespace Types
     {
         public static Matrix<double> ReplaceDiagonalElements(this Matrix<double> matrix, double value)
         {
-            var m = matrix.Clone();
-            for (int i = 0; i < new[] { m.RowsCount, m.ColumnsCount }.Min(); i++)
-                m[i, i] = value;
+            var cloneMatrix = matrix.Clone();
+            for (int i = 0; i < new[] { cloneMatrix.RowsCount, cloneMatrix.ColumnsCount }.Min(); i++)
+                cloneMatrix[i, i] = value;
 
-            return m;
+            return cloneMatrix;
         }
     }
 }

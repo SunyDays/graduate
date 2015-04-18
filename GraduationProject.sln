@@ -1,7 +1,7 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduationProject", "GraduationProject\GraduationProject.csproj", "{ED79AAE5-A432-42FF-9DDA-03FCD77F29AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "GraduationProject\Main.csproj", "{ED79AAE5-A432-42FF-9DDA-03FCD77F29AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{573F05BC-4117-43DC-91AF-14A544690CD6}"
 EndProject

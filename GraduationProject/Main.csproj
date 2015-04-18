@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{ED79AAE5-A432-42FF-9DDA-03FCD77F29AA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>GraduationProject</RootNamespace>
+    <RootNamespace>Main</RootNamespace>
     <AssemblyName>GraduationProject</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>

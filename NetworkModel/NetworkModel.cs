@@ -98,7 +98,7 @@ namespace Modeling
 
                 // ro bar & ro total
                 RoBar.Add(LambdaBar[stream].Clone().Divide(Mu[stream]));
-                RoTotal.Add(RoBar.Last());
+                RoTotal = RoTotal.Add(RoBar.Last());
 
                 if(RoBar[stream].Any(roBar => roBar > 1))
                     throw new ArgumentOutOfRangeException(string.Format("RoBar, stream {0}", stream), "Some Ro is greater than zero.");
@@ -115,10 +115,10 @@ namespace Modeling
             matrix.RemoveRow(0);
             matrix.AddColumn(matrix.GetColumn(0).Negate());
             matrix.RemoveColumn(0);
-            matrix.ReplaceDiagonalElements(-1);
+            matrix = matrix.ReplaceDiagonalElements(-1);
 
             return matrix;
-                 }
+         }
 
         #region COMPUTE PROBABILITY-TIME CHARACTERISTICS
         private void ComputeStationaryPTC()

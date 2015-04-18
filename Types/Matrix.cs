@@ -190,8 +190,7 @@ namespace Types
         {
             CheckColumnLength(column.Count());
 
-            _matrix.Zip(column, (row, item) => row.AddElement(item));
-
+            _matrix = _matrix.Zip(column, (row, item) => row.AddElement(item)).ToList();
             ColumnsCount++;
 
             return this;
@@ -201,22 +200,20 @@ namespace Types
         {
             CheckColumnIndex(index);
 
+            // BUG: indexoutofrangeexception sometimes
             return new Vector<T>(_matrix.Select(row => row[index]));
         }
 
-        public Matrix<T> GetColumns(int index, int count)
+        public List<Vector<T>> GetColumns(int index, int count)
         {
-            return new Matrix<T>(_matrix.Select(row => row.GetSubVector(index, count)));
+            return _matrix.Select(row => row.GetSubVector(index, count)).ToList();
         }
 
         public Matrix<T> InsertColumn(int index, IEnumerable<T> column)
         {
             CheckColumnLength(column.Count());
 
-            var vector = new Vector<T>(column);
-            for (int r = 0; r < RowsCount; r++)
-                _matrix[r].InsertElement(index, vector[r]);
-
+            _matrix = _matrix.Zip(column, (row, item) => row.InsertElement(index, item)).ToList();
             ColumnsCount++;
 
             return this;
@@ -260,6 +257,10 @@ namespace Types
             var transposeMatrix = new Matrix<T>(ColumnsCount, 1);
             _matrix.ForEach(row => transposeMatrix.AddColumn(row));
             _matrix = transposeMatrix.RemoveColumn(0).GetList();
+
+            var rowsCount = RowsCount;
+            RowsCount = ColumnsCount;
+            ColumnsCount = rowsCount;
 
             return this;
         }

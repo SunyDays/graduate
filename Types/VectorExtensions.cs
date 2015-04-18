@@ -57,6 +57,6 @@ namespace Types
         public static Vector<double> Pow(this Vector<double> vector, double power)
         {
             return new Vector<double>(vector.Select(element => Math.Pow(element, power)));
-                 }
+        }
     }
 }

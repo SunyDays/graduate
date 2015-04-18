@@ -55,8 +55,7 @@ namespace Types
 
         private void CheckIndex(int index)
         {
-            if (0 <= index && index < Length)
-                return;
+            if (0 <= index && index < Length) return;
 
             throw new IndexOutOfRangeException();
         }
