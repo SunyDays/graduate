@@ -8,6 +8,9 @@
 *.resources
 test-results/
 
+#Build results
+*/[Bb]in/*
+*/[Oo]bj/*
 
 ### Linux ###
 *~
@@ -17,7 +20,3 @@ test-results/
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
-# git folder, build results
-*/[Bb]in/*
-*/[Oo]bj/*
