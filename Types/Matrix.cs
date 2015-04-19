@@ -31,8 +31,8 @@ namespace Types
 
         public Matrix(T[,] array)
         {
-            RowsCount = array.GetUpperBound(0) + 1;
-            ColumnsCount = array.GetUpperBound(1) + 1;
+            RowsCount = array.GetLength(0);
+            ColumnsCount = array.GetLength(1);
 
             InitializeMatrix();
 
