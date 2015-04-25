@@ -35,12 +35,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolHelper.cs" />
     <Compile Include="GaussMethod.cs" />
+    <Compile Include="GraphHelper.cs" />
+    <Compile Include="CommonHelper.cs" />
+    <Compile Include="Types\Matrix.cs" />
+    <Compile Include="Types\Vector.cs" />
+    <Compile Include="Extensions\MatrixExtensions.cs" />
+    <Compile Include="Extensions\VectorExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Types\Types.csproj">
-      <Project>{47664CFA-4B8A-4C3E-99FC-0195B5203E04}</Project>
-      <Name>Types</Name>
-    </ProjectReference>
+    <Folder Include="Types\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 </Project>

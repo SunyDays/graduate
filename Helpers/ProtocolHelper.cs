@@ -15,15 +15,10 @@ namespace Helpers
             _100G = 100000000000    // 100 Gbit/s
         }
 
-        public static ulong GetBitRate(EthernetType ethernetType)
-        {
-            return (ulong)ethernetType;
-        }
-
-        public static double GetBitInterval(EthernetType ethetnetType)
-        {
-            return 1.0 / GetBitRate(ethetnetType);
-        }
+        public static Func<EthernetType, ulong> GetBitRate = ethernetType => (ulong)ethernetType;
+        public static Func<EthernetType, double> GetBitInterval = ethernetType => 1.0 / GetBitRate(ethernetType);
+        public static Func<int, bool> IsRightFrameLength =
+            byteFrameLength => (int)FrameRange.Min <= byteFrameLength && byteFrameLength <= (int)FrameRange.Max;
 
         public enum FrameRange
         {
@@ -39,11 +34,6 @@ namespace Helpers
 
             return 1.0 /
                 (GetBitInterval(ethernetType) * (8 * byteFrameLength + 96) * (useMiliSeconds? Math.Pow(10, 3) : 1));
-        }
-
-        public static bool IsRightFrameLength(int byteFrameLength)
-        {
-            return (int)FrameRange.Min <= byteFrameLength && byteFrameLength <= (int)FrameRange.Max;
         }
     }
 }

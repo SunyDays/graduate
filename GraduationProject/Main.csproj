@@ -49,9 +49,5 @@
       <Project>{8E39CF8A-3018-4643-BF6A-23E216583EF8}</Project>
       <Name>NetworkModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Types\Types.csproj">
-      <Project>{47664CFA-4B8A-4C3E-99FC-0195B5203E04}</Project>
-      <Name>Types</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

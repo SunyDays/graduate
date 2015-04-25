@@ -41,9 +41,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Types\Types.csproj">
-      <Project>{47664CFA-4B8A-4C3E-99FC-0195B5203E04}</Project>
-      <Name>Types</Name>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{573F05BC-4117-43DC-91AF-14A544690CD6}</Project>
+      <Name>Helpers</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

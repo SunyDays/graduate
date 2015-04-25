@@ -42,13 +42,5 @@
       <Project>{573F05BC-4117-43DC-91AF-14A544690CD6}</Project>
       <Name>Helpers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CommonHelper\CommonHelper.csproj">
-      <Project>{5BA2F340-AC27-434F-BAFF-DE4FB397597F}</Project>
-      <Name>CommonHelper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Types\Types.csproj">
-      <Project>{47664CFA-4B8A-4C3E-99FC-0195B5203E04}</Project>
-      <Name>Types</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
