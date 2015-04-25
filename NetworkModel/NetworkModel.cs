@@ -94,11 +94,11 @@ namespace Modeling
                 E.Add(GaussMethod.Solve(GetExtendedMatrix(stream)));
 
                 // lambda bar
-                LambdaBar.Add(E[stream].Clone().Multiply(Lambda0[stream]));
+                LambdaBar.Add(E[stream].Multiply(Lambda0[stream]));
 
                 // ro bar & ro total
-                RoBar.Add(LambdaBar[stream].Clone().Divide(Mu[stream]));
-                RoTotal = RoTotal.Add(RoBar.Last());
+                RoBar.Add(LambdaBar[stream].DivideElementWise(Mu[stream]));
+                RoTotal = RoTotal.AddElementWise(RoBar.Last());
 
                 if(RoBar[stream].Any(roBar => roBar > 1))
                     throw new ArgumentOutOfRangeException(string.Format("RoBar, stream {0}", stream), "Some Ro is greater than zero.");
@@ -134,9 +134,9 @@ namespace Modeling
 
             for (int stream = 0; stream < StreamsCount; stream++)
             {
-                Us.Add( Ws.Clone().Add(Mu[stream].Clone().Pow( -1 )) );
-                Ls.Add( LambdaBar[stream].Clone().Multiply( Ws ) );
-                Ns.Add( LambdaBar[stream].Clone().Multiply( Us[stream]) );
+                Us.Add( Ws.AddElementWise(Mu[stream].Pow( -1 )) );
+                Ls.Add( LambdaBar[stream].MultiplyElementWise( Ws ) );
+                Ns.Add( LambdaBar[stream].MultiplyElementWise( Us[stream]) );
             }
         }
 
@@ -197,7 +197,7 @@ namespace Modeling
                         .Select(ParseMu)
                     ));
 
-                Ro.Add(Lambda.Last().Clone().Divide(Mu.Last()));
+                Ro.Add(Lambda.Last().DivideElementWise(Mu.Last()));
             }
         }
 

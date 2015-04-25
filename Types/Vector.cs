@@ -84,6 +84,11 @@ namespace Types
             return this;
         }
 
+        public Vector<T> Concat(IEnumerable<T> collection)
+        {
+            return AddElements(collection);
+        }
+
         public Vector<T> InsertElement(int index, T element)
         {
             CheckIndex(index == 0 ? index : index - 1);

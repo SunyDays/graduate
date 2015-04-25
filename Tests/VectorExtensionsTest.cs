@@ -24,7 +24,7 @@ namespace Tests
             var vector1 = new Vector<double>(new[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
             var vector2 = new Vector<double>(new[] {0.6, 7.0, 8.0, 9.0, 10.0, 11.0});
 
-            Assert.AreNotEqual(vector1, vector1.Add(vector2));
+            Assert.AreNotEqual(vector1, vector1.AddElementWise(vector2));
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Tests
             var vector1 = new Vector<double>(new[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
             var vector2 = new Vector<double>(new[] {0.6, 7.0, 8.0, 9.0, 10.0, 11.0});
 
-            Assert.AreNotEqual(vector1, vector1.Substract(vector2));
+            Assert.AreNotEqual(vector1, vector1.SubstractElementWise(vector2));
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace Tests
             var vector1 = new Vector<double>(new[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
             var vector2 = new Vector<double>(new[] {0.6, 7.0, 8.0, 9.0, 10.0, 11.0});
 
-            Assert.AreNotEqual(vector1, vector1.Multiply(vector2));
+            Assert.AreNotEqual(vector1, vector1.MultiplyElementWise(vector2));
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace Tests
             var vector1 = new Vector<double>(new[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
             var vector2 = new Vector<double>(new[] {0.6, 7.0, 8.0, 9.0, 10.0, 11.0});
 
-            Assert.AreNotEqual(vector1, vector1.Divide(vector2));
+            Assert.AreNotEqual(vector1, vector1.DivideElementWise(vector2));
         }
 
         [Test]

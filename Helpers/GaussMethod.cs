@@ -45,7 +45,7 @@ namespace Helpers
                     if(!additionRow[baseR].Equals(0))
                         extendedMatrix.ReplaceRow( additionR,
                             additionRow.Multiply( baseRow[baseR])
-                            .Substract( baseRow.Multiply(additionRow[baseR]) ));
+                            .SubstractElementWise( baseRow.Multiply(additionRow[baseR]) ));
                 }
             }
 

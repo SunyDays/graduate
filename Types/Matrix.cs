@@ -71,6 +71,20 @@ namespace Types
             }
         }
 
+        public Vector<T> this[int row]
+        {
+            get
+            {
+                CheckRowIndex(row);
+                return _matrix[row];
+            }
+            set
+            {
+                CheckRowIndex(row);
+                _matrix[row] = value;
+            }
+        }
+
         private void CheckIndices(int rowIndex, int columnIndex)
         {
             CheckRowIndex(rowIndex);
