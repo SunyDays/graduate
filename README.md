@@ -1,4 +1,4 @@
-# graduate
+# Graduate
 my bachelor's graduate work
 
 Theme: modeling of information networks using theory of queuing networks
