@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Helpers;
 using Types;
 using System.Diagnostics.SymbolStore;
+using System.IO.Pipes;
 
 namespace Modeling
 {
@@ -13,33 +14,41 @@ namespace Modeling
     {
         #region PARAMETERS
         private Matrix<double> RoutingMatrix;
-        public List<Vector<double>> Lambda{ get; private set; }
-        public List<Vector<double>> Mu{ get; private set; }
-        public Vector<double> Lambda0{ get; private set; }
-        public int StreamsCount { get; private set; }
-        public int NodesCount { get; private set; }
-        public List<Vector<double>> InputIntensity{ get; private set; }
-        public List<Vector<double>> E { get; private set; }
-        public List<Vector<double>> LambdaBar{ get; private set; }
-        public List<Vector<double>> Ro{ get; private set; }
-        public List<Vector<double>> RoBar{ get; private set; }
-        public Vector<double> RoTotal{ get; private set; }
+        public List<Vector<double>> Lambda          { get; private set; }
+        public List<Vector<double>> Mu              { get; private set; }
+        public Vector<double> Lambda0               { get; private set; }
+        public int StreamsCount                     { get; private set; }
+        public int NodesCount                       { get; private set; }
+        public List<Vector<double>> InputIntensity  { get; private set; }
+        public List<Vector<double>> E               { get; private set; }
+        public List<Vector<double>> LambdaBar       { get; private set; }
+        public List<Vector<double>> Ro              { get; private set; }
+        public List<Vector<double>> RoBar           { get; private set; }
+        public Vector<double> RoTotal               { get; private set; }
+        public List<Vector<int>> Paths              { get; private set; }
+        public List<double> TransitionProbabilities { get; private set; }
+
+        public int StartNode                        { get; private set; }
+        public int TargetNode                       { get; private set; }
         #endregion
 
         #region PROBABILITY-TIME CHARACTERISTICS
-        public Vector<double> Ws{ get; private set; }
-        public List<Vector<double>> Us{ get; private set; }
-        public List<Vector<double>> Ls{ get; private set; }
-        public List<Vector<double>> Ns{ get; private set; }
+        public Vector<double> Ws                    { get; private set; }
+        public List<Vector<double>> Us              { get; private set; }
+        public List<Vector<double>> Ls              { get; private set; }
+        public List<Vector<double>> Ns              { get; private set; }
 
-        public Vector<double> Wi{ get; private set; }
-        public List<Vector<double>> Ui{ get; private set; }
-        public List<Vector<double>> Li{ get; private set; }
-        public List<Vector<double>> Ni{ get; private set; }
+        public double Wi                            { get; private set; }
+        public List<double> Ui                      { get; private set; }
+        public List<double> Li                      { get; private set; }
+        public List<double> Ni                      { get; private set; }
         #endregion
 
-        private NetworkModel()
+        private NetworkModel(int startNode, int targetNode)
         {
+            StartNode = startNode;
+            TargetNode = targetNode;
+
             Lambda = new List<Vector<double>>();
             Mu = new List<Vector<double>>();
             Lambda0 = new Vector<double>();
@@ -54,18 +63,19 @@ namespace Modeling
             Us = new List<Vector<double>>();
             Ls = new List<Vector<double>>();
             Ns = new List<Vector<double>>();
-            Wi = new Vector<double>();
-            Ui = new List<Vector<double>>();
-            Li = new List<Vector<double>>();
-            Ni = new List<Vector<double>>();
+            Ui = new List<double>();
+            Li = new List<double>();
+            Ni = new List<double>();
         }
 
-        public NetworkModel(String path) : this()
+        public NetworkModel(String path, int startNode, int targetNode)
+            : this(startNode, targetNode)
         {
             ParseConfig(path);
 
             ComputeParameters();
             ComputeStationaryPTC();
+            ComputeIntegratedPTC();
         }
 
         public Matrix<double> GetRoutingMatrix(int streamIndex)
@@ -142,7 +152,45 @@ namespace Modeling
 
         private void ComputeIntegratedPTC()
         {
-            throw new NotImplementedException();
+            Paths = GraphHelper.GetAllPaths(RoutingMatrix.Clone().RemoveColumn(0), StartNode, TargetNode);
+            ComputePathsProbabilities();
+
+            Wi = ComputeIntegralChar(Ws);
+            for (int stream = 0; stream < StreamsCount; stream++)
+            {
+                Ui.Add(ComputeIntegralChar(Us[stream]));
+                Li.Add(ComputeIntegralChar(Ls[stream]));
+                Ni.Add(ComputeIntegralChar(Ns[stream]));
+            }
+        }
+
+        private double ComputeIntegralChar(Vector<double> staticChar)
+        {
+            var integralChar = staticChar[StartNode] + staticChar[TargetNode];
+            for (int i = 0; i < Paths.Count; i++)
+            {
+                var temp = 0.0;
+                for (int j = 1; j < Paths[i].Length - 1; j++)
+                    temp += staticChar[j];
+
+                integralChar += TransitionProbabilities[i] * temp;
+            }
+
+            return integralChar;
+        }
+
+        private void ComputePathsProbabilities()
+        {
+            var matrix = RoutingMatrix.Clone().RemoveColumn(0);
+
+            var pathsProbabilities = 
+                Paths.Select(path => 
+                    path.Where((item, index) => index < path.Length -1).Select((item, index) => new {item, index})
+                    .Aggregate(1.0, (accumulate, anon) => accumulate *= matrix[anon.item, path[anon.index + 1]]));
+
+            var s = pathsProbabilities.Sum();
+
+            TransitionProbabilities = pathsProbabilities.Select(prob => prob / s).ToList();
         }
         #endregion
 
@@ -178,8 +226,6 @@ namespace Modeling
 
         private void ParseNodes(XContainer root)
         {
-//            StreamsCount = GetElements(root, "Lambda").Max(element => int.Parse(element.Attribute("Stream").Value));
-//            NodesCount = GetElements(root, "Node").Count();
 
             GetStreamsCount(root);
             GetNodesCount(root);
