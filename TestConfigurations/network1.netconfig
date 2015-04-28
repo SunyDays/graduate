@@ -1,0 +1,47 @@
+<NetworkConfiguration>
+	<RoutingMatrix>
+		<Row>0;P1;P2;P3;P4</Row>
+		<Row>0.25;0;0.75;0;0</Row>
+		<Row>0.25;0.375;0;0.375;0</Row>
+		<Row>0.25;0;0.375;0;0.375</Row>
+		<Row>0.25;0;0;0.75;0</Row>
+	</RoutingMatrix>
+
+	<Nodes>
+		<Node  Index="0">
+			<Stream Index="0">
+				<Lambda>17</Lambda>
+				<Mu>
+					<Ethernet Type="Gigabit" FrameLength="Max"/>
+		    	</Mu>
+			</Stream>
+		</Node>
+
+		<Node  Index="1">
+			<Stream Index="0">
+				<Lambda>14</Lambda>
+				<Mu>
+	    			<Ethernet Type="Gigabit" FrameLength="Max"/>
+				</Mu>
+			</Stream>
+		</Node>
+
+		<Node  Index="2">
+			<Stream Index="0">
+				<Lambda>13</Lambda>
+				<Mu>
+					<Ethernet Type="Gigabit" FrameLength="Max"/>
+				</Mu>
+			</Stream>
+		</Node>
+
+		<Node>
+			<Stream Index="0">
+				<Lambda>16</Lambda>
+				<Mu>
+					<Ethernet Type="Gigabit" FrameLength="Max"/>
+				</Mu>
+			</Stream>
+		</Node>
+	</Nodes>
+</NetworkConfiguration>
