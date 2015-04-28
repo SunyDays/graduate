@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>true</Externalconsole>
-    <Commandlineparameters>/home/sunydays/Documents/Monodevelop/GraduationProject/network1.config</Commandlineparameters>
+    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/network2.netconfig" /startnode:0 /targetnode:3</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>

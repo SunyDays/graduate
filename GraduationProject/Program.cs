@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using Helpers;
 using Modeling;
 using Types;
+using System.Text;
 
 namespace Main
 {
@@ -12,10 +13,11 @@ namespace Main
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 1)
-                throw new ArgumentException("Need config file", "args");
+            var netconfigFullName = args.GetArgValue<string>("netconfig");
+            var startNodeIndex = args.GetArgValue<int>("startnode");
+            var targetNodeIndex = args.GetArgValue<int>("targetnode");
 
-            var networkModel = new NetworkModel(args[0], 0, 3);
+            var networkModel = new NetworkModel(netconfigFullName, startNodeIndex, targetNodeIndex);
             ConsoleOutput(networkModel);
 
             Console.ReadLine();
@@ -26,85 +28,103 @@ namespace Main
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
 
-            ColorWriteLine("==================== Network model parameters ====================", ConsoleColor.Blue);
+            ConsoleColorWrite("==================== Network model parameters ====================", ConsoleColor.Blue);
 
-            ColorWriteLine(String.Format("Number of streams = {0}", networkModel.StreamsCount), ConsoleColor.Green);
+            ConsoleColorWrite(String.Format("Number of streams = {0}", networkModel.StreamsCount), ConsoleColor.Green);
 
             for (int stream = 0; stream < networkModel.StreamsCount; stream++)
             {
-                ColorWriteLine(String.Format("==================== Stream {0} ====================", stream + 1),
+                ConsoleColorWrite(String.Format("==================== Stream {0} ====================", stream + 1),
                     ConsoleColor.White);    
 
-                ColorWriteLine("Routing matrix", ConsoleColor.Green);
+                ConsoleColorWrite("Routing matrix", ConsoleColor.Green);
                 var routingMatrix = networkModel.GetRoutingMatrix(stream);
                 for (int i = 0; i < routingMatrix.RowsCount; i++)
                 {
                     for (int j = 0; j < routingMatrix.ColumnsCount; j++)
-                        Console.Write("{0:0.000}\t", routingMatrix[i, j]);
+                        ConsoleColorWrite(string.Format("{0:0.000}\t", routingMatrix[i, j]),
+                            routingMatrix[i, j] == 0 ? Console.ForegroundColor : ConsoleColor.Yellow, false);
 
                     Console.WriteLine ();
                 }
                 Console.WriteLine();
 
-                ColorWriteLine("Lambda\t\tMu\t\tRo", ConsoleColor.Green);
+                ConsoleColorWrite("Lambda\t\tMu\t\tRo", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.NodesCount; i++)
                     Console.WriteLine("{0:0.000}\t\t{1:0.000}\t\t{2:0.000}",
                         networkModel.Lambda[stream][i], networkModel.Mu[stream][i], networkModel.Ro[stream][i]);
                 Console.WriteLine();
 
-                ColorWriteLine("Lambda0", ConsoleColor.Green);
+                ConsoleColorWrite("Lambda0", ConsoleColor.Green);
                 Console.WriteLine(networkModel.Lambda0[stream]);
                 Console.WriteLine ();
 
-                ColorWriteLine("E", ConsoleColor.Green);
+                ConsoleColorWrite("E", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.E[stream].Length; i++)
                     Console.WriteLine("{0:0.000}\t", networkModel.E[stream][i]);
                 Console.WriteLine();
 
-                ColorWriteLine("LambdaBar\tRoBar", ConsoleColor.Green);
+                ConsoleColorWrite("LambdaBar\tRoBar", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.NodesCount; i++)
                     Console.WriteLine("{0:0.000}\t\t{1:0.000}",
                         networkModel.LambdaBar[stream][i], networkModel.RoBar[stream][i]);
                 Console.WriteLine();
 
-                ColorWriteLine("RoTotal", ConsoleColor.Green);
+                ConsoleColorWrite("RoTotal", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.RoTotal.Length; i++)
                     Console.WriteLine("{0:0.000}\t", networkModel.RoTotal[i]);
                 Console.WriteLine();
 
-                ColorWriteLine("Stationary probability-time characteristics", ConsoleColor.Green);
-                ColorWriteLine("Ws", ConsoleColor.Green);
+                ConsoleColorWrite("Stationary probability-time characteristics", ConsoleColor.Green);
+                ConsoleColorWrite("Ws", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.Ws.Length; i++)
                     Console.WriteLine("{0:0.000}\t", networkModel.Ws[i]);
                 Console.WriteLine();
 
-                ColorWriteLine("Us\t\tLs\t\tNs", ConsoleColor.Green);
+                ConsoleColorWrite("Us\t\tLs\t\tNs", ConsoleColor.Green);
                 for (int i = 0; i < networkModel.NodesCount; i++)
                     Console.WriteLine("{0:0.000}\t\t{1:0.000}\t\t{2:0.000}",
                         networkModel.Us[stream][i], networkModel.Ls[stream][i], networkModel.Ns[stream][i]);
                 Console.WriteLine();
 
-                ColorWriteLine("Integrated probability-time characteristics", ConsoleColor.Green);
-                ColorWriteLine("Wi", ConsoleColor.Green);
+                ConsoleColorWrite("Integrated probability-time characteristics", ConsoleColor.Green);
+
+                ConsoleColorWrite("Paths", ConsoleColor.Green);
+                for (int i = 0; i < networkModel.Paths.Count; i++)
+                    Console.WriteLine(
+                        networkModel.Paths[i].Aggregate(string.Empty,
+                            (accumulate, value) => accumulate +
+                            (accumulate == string.Empty ? "" : " -> ") + value
+                        )
+                        + " : " + networkModel.TransitionProbabilities[i]
+                    );
+                Console.WriteLine();
+
+                ConsoleColorWrite("Wi", ConsoleColor.Green);
                 Console.WriteLine(networkModel.Wi);
                 Console.WriteLine();
 
-                ColorWriteLine("Ui\t\tLi\t\tNi", ConsoleColor.Green);
+                ConsoleColorWrite("Ui\t\tLi\t\tNi", ConsoleColor.Green);
                     Console.WriteLine("{0:0.000}\t\t{1:0.000}\t\t{2:0.000}",
                         networkModel.Ui[stream], networkModel.Li[stream], networkModel.Ni[stream]);
                 Console.WriteLine();
 
-                ColorWriteLine("==================================================", ConsoleColor.White);
+                ConsoleColorWrite("==================================================", ConsoleColor.White);
             }
 
-            ColorWriteLine("==================================================================", ConsoleColor.Blue);
+            ConsoleColorWrite("==================================================================", ConsoleColor.Blue);
         }
 
-        public static void ColorWriteLine(String message, ConsoleColor color)
+        public static void ConsoleColorWrite(String message, ConsoleColor color, bool writeLine = true)
         {
             var originalColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.WriteLine(message);
+
+            if (writeLine)
+                Console.WriteLine(message);
+            else
+                Console.Write(message);
+
             Console.ForegroundColor = originalColor;
         }
 

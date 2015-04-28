@@ -204,41 +204,38 @@ namespace Modeling
 
         private void ParseRoutingMatrix(XContainer root)
         {
-            var rows = GetElements(root, "Row");
-            RoutingMatrix = new Matrix<double>(rows.Count - 1, rows.Count);
+//            RoutingMatrix = new Matrix<double>(0, );
 
-            for (int r = 0; r < rows.Count - 1; r++)
-            {
-                var rowItems = rows[r + 1].Value.Split(new[] { ';' });
-                var sum = 0.0;
-                for (int c = 0; c < rowItems.Length; c++)
-                {
-                    var item = Double.Parse(rowItems[c]);
-                    sum += item;
-                    RoutingMatrix[r, c] = item;
-                }
+            RoutingMatrix = new Matrix<double>(
+                GetElements(root, "Row").Skip(1).Select(
+                    element => element.Value.Split(new[] { ';' }).Select(value => double.Parse(value))));
 
-                if (!sum.Equals(1.0))
-                    throw new ArgumentOutOfRangeException(String.Format("RoutingMatrix, row {0}", r),
-                        "The sum of the row must be equal to 1");
-            }
+            var wrongRowsIndeces = RoutingMatrix.Select((row, index) => new {row, index})
+                .Where(anon => !anon.row.Sum().Equals(1.0))
+                .Aggregate(string.Empty,
+                    (wrongRows, index) => wrongRows + string.Format("{0} ,", index));
+
+            if(wrongRowsIndeces != string.Empty)
+                throw new ArgumentOutOfRangeException(String.Format("RoutingMatrix, rows {0}", wrongRowsIndeces),
+                    "The sum of the row must be equal to 1");
         }
 
         private void ParseNodes(XContainer root)
         {
-            GetStreamsCount(root);
-            GetNodesCount(root);
+            StreamsCount = GetElements(root, "Stream")
+                .Max(element => int.Parse(element.Attribute("Index").Value)) + 1;
+            NodesCount = GetElements(root, "Node").Count();
 
-            for (int stream = 1; stream <= StreamsCount; stream++)
+            for (int stream = 0; stream < StreamsCount; stream++)
             {
                 Lambda.Add(
                     new Vector<double>(
-                        GetElements(root, "Lambda").Where(element => int.Parse(element.Attribute("Stream").Value) == stream)
+                        GetElements(root, "Lambda").Where(element => int.Parse(element.Parent.Attribute("Index").Value) == stream)
                         .Select(element => double.Parse(element.Value))
                     ));
                 Mu.Add(
                     new Vector<double>(
-                        GetElements(root, "Mu").Where(element => int.Parse(element.Attribute("Stream").Value) == stream)
+                        GetElements(root, "Mu").Where(element => int.Parse(element.Parent.Attribute("Index").Value) == stream)
                         .Select(ParseMu)
                     ));
 
@@ -246,27 +243,12 @@ namespace Modeling
             }
         }
 
-
-        private void GetStreamsCount(XContainer root)
-        {
-            var elements = GetElements(root, "Lambda");
-            StreamsCount = elements.Max(element => int.Parse(element.Attribute("Stream").Value));
-
-            if(elements.Min(element => int.Parse(element.Attribute("Stream").Value)).Equals(0))
-                StreamsCount ++;
-        }
-
-        private void GetNodesCount(XContainer root)
-        {
-            NodesCount = GetElements(root, "Node").Count();
-        }
-
         private double ParseMu(XElement element)
         {
-            if (!element.Descendants("Ethernet").Any())
+            var ethernetElement = GetElements(element, "Ethernet").SingleOrDefault();
+            if (ethernetElement == null)
                 return double.Parse(element.Value);
 
-            XElement ethernetElement = element.Descendants("Ethernet").First();
             var ethernetType = (ProtocolHelper.EthernetType)Enum.Parse(typeof(ProtocolHelper.EthernetType),
                                    ethernetElement.Attribute("Type").Value);
 

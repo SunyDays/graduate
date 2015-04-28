@@ -49,6 +49,10 @@ namespace Types
             _matrix = rows.ToList();
         }
 
+        public Matrix(IEnumerable<IEnumerable<T>> rows)
+            : this(rows.Select(row => new Vector<T>(row)))
+        { }
+
         private void InitializeMatrix()
         {
             _matrix = new List<Vector<T>>();
@@ -214,7 +218,6 @@ namespace Types
         {
             CheckColumnIndex(index);
 
-            // BUG: indexoutofrangeexception sometimes
             return new Vector<T>(_matrix.Select(row => row[index]));
         }
 
