@@ -226,7 +226,6 @@ namespace Modeling
 
         private void ParseNodes(XContainer root)
         {
-
             GetStreamsCount(root);
             GetNodesCount(root);
 

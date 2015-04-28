@@ -11,7 +11,7 @@ namespace Types
         public static Matrix<double> ReplaceDiagonalElements(this Matrix<double> matrix, double value)
         {
             var cloneMatrix = matrix.Clone();
-            for (int i = 0; i < new[] { cloneMatrix.RowsCount, cloneMatrix.ColumnsCount }.Min(); i++)
+            for (int i = 0; i < Math.Min(cloneMatrix.RowsCount, cloneMatrix.ColumnsCount); i++)
                 cloneMatrix[i, i] = value;
 
             return cloneMatrix;
