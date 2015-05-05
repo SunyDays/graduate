@@ -17,6 +17,21 @@ namespace Helpers
                 return (T) formatter.Deserialize(ms);
             }
         }
+
+        public static T CastObject<T>(this object obj)
+        {
+            if (obj is T)
+                return (T)obj;
+
+            try
+            {
+                return (T) Convert.ChangeType(obj, typeof(T));
+            }
+            catch(InvalidCastException)
+            {
+                return default(T);
+            }
+        }
     }
 }
 

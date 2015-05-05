@@ -7,11 +7,17 @@ using Helpers;
 using Types;
 using System.Diagnostics.SymbolStore;
 using System.IO.Pipes;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Runtime.Remoting.Proxies;
+using System.Runtime.InteropServices;
 
 namespace Modeling
 {
     public class NetworkModel
     {
+        public string Name                          { get; private set;}
+
         #region PARAMETERS
         private Matrix<double> RoutingMatrix;
         public List<Vector<double>> Lambda          { get; private set; }
@@ -46,8 +52,8 @@ namespace Modeling
 
         private NetworkModel(int startNode, int targetNode)
         {
-            StartNode = startNode;
-            TargetNode = targetNode;
+            StartNode = startNode - 1;
+            TargetNode = targetNode - 1;
 
             Lambda = new List<Vector<double>>();
             Mu = new List<Vector<double>>();
@@ -82,7 +88,6 @@ namespace Modeling
         {
             if (streamIndex > StreamsCount)
                 throw new ArgumentException();
-
 
             var streamRoutingMatrix = RoutingMatrix.Clone();
             streamRoutingMatrix.InsertRow(0, InputIntensity[streamIndex]);
@@ -194,21 +199,64 @@ namespace Modeling
         }
         #endregion
 
+        #region COMPUTE PROBABILITY DENSITY
+        public Vector<double> ComputeGt(Vector<int> path, int stream, IEnumerable<double> t)
+        {
+            var result = new Vector<double>(t.Count());
+
+            for (int i = 0; i < t.Count(); i++)
+                foreach (var node in path)
+                    result[i] += ComputeHi(path, node, stream) *
+                    (Mu[stream][node] - LambdaBar[stream][node]) *
+                        Math.Pow(Math.E, -(Mu[stream][node] - LambdaBar[stream][node]) * t.ElementAt(i));
+
+            return result;
+        }
+
+        private double ComputeHi(Vector<int> path, int i, int stream)
+        {
+            var Hi = 1.0;
+
+            foreach (var node in path)
+                if (node != i)
+                    Hi *= (Mu[stream][node] - LambdaBar[stream][node]) /
+                    (Mu[stream][node] - Mu[stream][i] - LambdaBar[stream][node] + LambdaBar[stream][i]);
+
+            return Hi;
+        }
+        #endregion
+
         #region PARSE XML
         private void ParseConfig(String path)
         {
             var root = XDocument.Load(path).Root;
+            Name = root.Attribute("Name").Value;
+
             ParseRoutingMatrix(root);
             ParseNodes(root);
         }
 
+        // TODO: don't touch
         private void ParseRoutingMatrix(XContainer root)
         {
-//            RoutingMatrix = new Matrix<double>(0, );
+            var rows = GetElements(root, "Row").Skip(1).Select(row => row.Value).ToList();
+            for (int i = 0; i < rows.Count(); i++)
+            {
+                var elements = rows[i].Split(';').Select(element => element.Trim()).ToList();
 
-            RoutingMatrix = new Matrix<double>(
-                GetElements(root, "Row").Skip(1).Select(
-                    element => element.Value.Split(new[] { ';' }).Select(value => double.Parse(value))));
+                var n = elements.Count(element => element.Contains("-"));
+                var value = 0.0;
+                if(n != 0)
+                    value = (1 - double.Parse(elements[0])) / n;
+
+                var row = elements.Select(element => element.Contains("-") ?
+                    value :
+                    double.Parse(element));
+                if (i == 0)
+                    RoutingMatrix = new Matrix<double>(new[] { row });
+                else
+                    RoutingMatrix.AddRow(row);
+            }
 
             var wrongRowsIndeces = RoutingMatrix.Select((row, index) => new {row, index})
                 .Where(anon => !anon.row.Sum().Equals(1.0))
@@ -224,42 +272,58 @@ namespace Modeling
         {
             StreamsCount = GetElements(root, "Stream")
                 .Max(element => int.Parse(element.Attribute("Index").Value)) + 1;
-            NodesCount = GetElements(root, "Node").Count();
+
+            NodesCount = GetAttributeValue<int>(GetElement(root, "Nodes"), "Count");
 
             for (int stream = 0; stream < StreamsCount; stream++)
             {
-                Lambda.Add(
-                    new Vector<double>(
-                        GetElements(root, "Lambda").Where(element => int.Parse(element.Parent.Attribute("Index").Value) == stream)
-                        .Select(element => double.Parse(element.Value))
-                    ));
-                Mu.Add(
-                    new Vector<double>(
-                        GetElements(root, "Mu").Where(element => int.Parse(element.Parent.Attribute("Index").Value) == stream)
-                        .Select(ParseMu)
-                    ));
+                Mu.Add(new Vector<double>(
+                    ParseMu(GetElements(root, "Mu")
+                        .Single(element => GetAttributeValue<int>(element.Parent, "Index") == stream))));
+
+                    Lambda.Add(new Vector<double>(
+                            ParseLambda(GetElements(root, "Lambda")
+                        .Single(element => GetAttributeValue<int>(element.Parent, "Index") == stream), stream)));
 
                 Ro.Add(Lambda.Last().DivideElementWise(Mu.Last()));
             }
         }
 
-        private double ParseMu(XElement element)
-        {
-            var ethernetElement = GetElements(element, "Ethernet").SingleOrDefault();
-            if (ethernetElement == null)
-                return double.Parse(element.Value);
+        private static Random random = new Random();
 
+        private IEnumerable<double> ParseLambda(XElement element, int stream)
+        {
+            return element.Value.ToLower().Contains("rand") ?
+            // FIXME: some RoBar > 1. random values must be under control
+            Enumerable.Range(0, NodesCount).Select(index => (double)random.Next(1, (int)Math.Floor(Mu[stream][index]))) :
+
+            element.Value.ToLower().Contains(";") ?
+            element.Value.Split(';').Select(lambda => double.Parse(lambda.Trim())) :
+            Enumerable.Repeat(double.Parse(element.Value), NodesCount);
+        }
+
+        private IEnumerable<double> ParseMu(XElement element)
+        {
+            var ethernetElements = GetElements(element, "Ethernet");
+
+            return ethernetElements.Count == 1 ?
+                Enumerable.Repeat(ParseEthernet(ethernetElements.First()), NodesCount) :
+                ethernetElements.Select(ethernet => ParseEthernet(ethernet));
+        }
+
+        private double ParseEthernet(XElement element)
+        {
             var ethernetType = (ProtocolHelper.EthernetType)Enum.Parse(typeof(ProtocolHelper.EthernetType),
-                                   ethernetElement.Attribute("Type").Value);
+                                   element.Attribute("Type").Value);
 
             int frameLength;
             try
             {
-                frameLength = int.Parse(ethernetElement.Attribute("FrameLength").Value);
+                frameLength = int.Parse(element.Attribute("FrameLength").Value);
             }
             catch (FormatException)
             {
-                frameLength = (int)Enum.Parse(typeof(ProtocolHelper.FrameRange), ethernetElement.Attribute("FrameLength").Value);
+                frameLength = (int)Enum.Parse(typeof(ProtocolHelper.FrameRange), element.Attribute("FrameLength").Value);
             }
 
             return ProtocolHelper.GetCapacity(ethernetType, frameLength);
@@ -269,6 +333,23 @@ namespace Modeling
         {
             return element.Descendants(elementName).ToList();
         }
+
+        private XElement GetElement(XContainer element, string elementName)
+        {
+            return GetElements(element, elementName).SingleOrDefault();
+        }
+
+        private T GetElementValue<T>(XContainer element, string elementName)
+        {
+            return GetElement(element, elementName).Value.CastObject<T>();
+        }
+
+        private T GetAttributeValue<T>(XElement element, string attributeName)
+        {
+            return element.Attribute(attributeName).Value.CastObject<T>();
+        }
+
+
         #endregion
     }
 }

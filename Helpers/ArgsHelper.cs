@@ -11,19 +11,7 @@ namespace Helpers
         {
             object value = args.Single(arg => arg.StartsWith("/" + argName)).Split(':').Last();
 
-            if (value is T)
-                return (T)value;
-            else
-            {
-                try
-                {
-                    return (T)Convert.ChangeType(value, typeof(T));
-                }
-                catch(InvalidCastException)
-                {
-                    return default(T);
-                }
-            }
+            return value.CastObject<T>();
         }
     }
 }
