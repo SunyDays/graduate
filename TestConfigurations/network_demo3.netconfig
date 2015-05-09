@@ -1,0 +1,21 @@
+<NetworkConfiguration Name="Star topology">
+	<RoutingMatrix>
+		<Row>0;		-;		-;		-;		-	</Row>
+		<Row>0.25;	0;		0;		0;		0.75</Row>
+		<Row>0.25;	0;		0;		0;		0.75</Row>
+		<Row>0.25;	0;		0;		0;		0.75</Row>
+		<Row>0.52;	0.16;	0.16;	0.16;	0	</Row>
+	</RoutingMatrix>
+
+	<Nodes Count="4">			
+		<Stream Index="0">
+			<Lambda>1.6; 1.5; 1.4; 15</Lambda>
+			<Mu>
+				<Ethernet Type="Fast" FrameLength="Max"/>
+				<Ethernet Type="Fast" FrameLength="Max"/>
+				<Ethernet Type="Fast" FrameLength="Max"/>
+				<Ethernet Type="Gigabit" FrameLength="Max"/>
+			</Mu>
+		</Stream>
+	</Nodes>
+</NetworkConfiguration>

@@ -1,0 +1,29 @@
+<NetworkConfiguration Name="test6">
+	<RoutingMatrix>
+		<Row>0;		-;	-;	-;	-;	-;	-;	-;	-</Row>
+		<Row>0.125;	0;	-;	0;	0;	-;	-;	0;	0</Row>
+		<Row>0.125;	-;	0;	-;	0;	0;	-;	-;	0</Row>
+		<Row>0.125;	0;	-;	0;	-;	0;	0;	-;	-</Row>
+		<Row>0.125;	0;	0;	-;	0;	0;	0;	0;	-</Row>
+		<Row>0.125;	-;	0;	0;	0;	0;	-;	0;	0</Row>
+		<Row>0.125;	-;	-;	0;	0;	-;	0;	-;	0</Row>
+		<Row>0.125;	0;	-;	-;	0;	0;	-;	0;	-</Row>
+		<Row>0.125;	0;	0;	-;	-;	0;	0;	-;	0</Row>
+	</RoutingMatrix>
+
+	<Nodes Count="8">
+		<Stream Index="0">
+			<Lambda>Rand</Lambda>
+			<Mu>
+				<Ethernet Type="Gigabit" FrameLength="Min"/>
+			</Mu>
+		</Stream>
+
+		<Stream Index="1">
+			<Lambda>Rand</Lambda>
+			<Mu>
+				<Ethernet Type="Gigabit" FrameLength="Max"/>
+			</Mu>
+		</Stream>
+	</Nodes>
+</NetworkConfiguration>

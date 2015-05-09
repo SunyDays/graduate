@@ -19,15 +19,30 @@ namespace Main
     {
         public static void Main(string[] args)
         {
-			var netconfig = Path.Combine(Directory.GetCurrentDirectory(), args.GetArgValue<string>("netconfig"));
+			var netconfig = args.GetArgValue<string>("netconfig");
             var startNodeIndex = args.GetArgValue<int>("startnode");
             var targetNodeIndex = args.GetArgValue<int>("targetnode");
-            var log = args.GetArgValue<bool>("log");
+			var log = args.ContainsArg("log");
+
+//			foreach (var netconfig in Directory.GetFiles("/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations")
+//				.Where(fileName => !fileName.EndsWith("~")))
+//			{
+//				Console.Clear();
+//
+//				string logFile = null;
+////				if (log)
+//					logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
+//						Path.GetFileNameWithoutExtension(netconfig) + ".log");
+//
+//				var networkModel = new NetworkModel(netconfig, 1, 4);
+//
+//				Output(networkModel, logFile);
+//			}
 
 			string logFile = null;
 			if (log)
-				logFile = Path.Combine(Path.GetDirectoryName(netconfig),
-					Path.GetFileNameWithoutExtension(netconfig) +".log");
+				logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
+					Path.GetFileNameWithoutExtension(netconfig) + ".log");
 
 			var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
 
@@ -277,6 +292,9 @@ namespace Main
                         data.Add(Environment.NewLine);
                 }
             }
+
+			if (!Directory.Exists(Path.GetDirectoryName(logFile)))
+				Directory.CreateDirectory(Path.GetDirectoryName(logFile));
 
 			File.WriteAllLines(logFile, data, Encoding.UTF8);
         }

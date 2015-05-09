@@ -1,0 +1,18 @@
+<NetworkConfiguration Name="test2">
+	<RoutingMatrix>
+		<Row>0;		-;		-;		-;		-</Row>
+		<Row>0.2;	0;		0.5;	0.3;	0</Row>
+		<Row>0.25;	0.35;	0;		0;		0.4</Row>
+		<Row>0.2;	0.5;	0;		0;		0.3</Row>
+		<Row>0.25;	0;		0.35;	0.4;	0</Row>
+	</RoutingMatrix>
+
+	<Nodes Count="4">
+		<Stream Index="0">
+			<Lambda>15; 17; 14; 18</Lambda>
+			<Mu>
+				<Ethernet Type="Gigabit" FrameLength="256"/>
+	    	</Mu>
+		</Stream>
+	</Nodes>
+</NetworkConfiguration>

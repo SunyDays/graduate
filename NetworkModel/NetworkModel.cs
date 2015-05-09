@@ -108,10 +108,10 @@ namespace Modeling
                 // E
                 E.Add(GaussMethod.Solve(GetExtendedMatrix(stream)));
 
-                // lambda bar
+                // lambda'
                 LambdaBar.Add(E[stream].Multiply(Lambda0[stream]));
 
-                // ro bar & ro total
+                // ro' & ro total
                 RoBar.Add(LambdaBar[stream].DivideElementWise(Mu[stream]));
                 RoTotal = RoTotal.AddElementWise(RoBar.Last());
 

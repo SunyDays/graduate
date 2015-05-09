@@ -13,6 +13,11 @@ namespace Helpers
 
             return value.CastObject<T>();
         }
+
+		public static bool ContainsArg(this string[] args, string argName)
+		{
+			return args.SingleOrDefault(arg => arg.StartsWith("/" + argName)) != null;
+		}
     }
 }
 
