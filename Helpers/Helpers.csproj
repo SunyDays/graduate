@@ -62,7 +62,6 @@
     <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="ArgsHelper.cs" />
     <Compile Include="NPlotHelper.cs" />
-    <Compile Include="HistogramHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

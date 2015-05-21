@@ -201,17 +201,23 @@ namespace Modeling
         #endregion
 
         #region COMPUTE PROBABILITY DENSITY
-        public Vector<double> ComputeGt(Vector<int> path, int stream, IEnumerable<double> t)
+		public IEnumerable<double> ComputeGt(Vector<int> path, int stream, IEnumerable<double> t)
         {
-            var result = new Vector<double>(t.Count());
+//            var result = new Vector<double>(t.Count());
 
             for (int i = 0; i < t.Count(); i++)
-                foreach (var node in path)
-                    result[i] += ComputeHi(path, node, stream) *
-                    (Mu[stream][node] - LambdaBar[stream][node]) *
-                        Math.Pow(Math.E, -(Mu[stream][node] - LambdaBar[stream][node]) * t.ElementAt(i));
+			{
+				var result = 0.0;
 
-            return result;
+				foreach (var node in path)
+					result += ComputeHi(path, node, stream) *
+					(Mu[stream][node] - LambdaBar[stream][node]) *
+					Math.Pow(Math.E, -(Mu[stream][node] - LambdaBar[stream][node]) * t.ElementAt(i));
+
+				yield return result;
+			}
+
+//            return result;
         }
 
         private double ComputeHi(Vector<int> path, int i, int stream)

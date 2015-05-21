@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -13,34 +13,29 @@ using NPlot;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 
 namespace Main
 {
-    class MainClass
-    {
-        public static void Main(string[] args)
-        {
+	class MainClass
+	{
+		public static void Main(string[] args)
+		{
 			var netconfig = args.GetArgValue<string>("netconfig");
-            var startNodeIndex = args.GetArgValue<int>("startnode");
-            var targetNodeIndex = args.GetArgValue<int>("targetnode");
+			var startNodeIndex = args.GetArgValue<int>("startnode");
+			var targetNodeIndex = args.GetArgValue<int>("targetnode");
 			var log = args.ContainsArg("log");
 
 			string logFile = null;
-			if (log)
+			if (log) 
 				logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
 					Path.GetFileNameWithoutExtension(netconfig) + ".log");
 
 			try
 			{
 				var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
-
 				Output(networkModel, logFile);
-				foreach (var path in networkModel.Paths)
-				{
-					var t = CreateRange(0, 2, 0.1);
-					var y = networkModel.ComputeGt(path, 0 , t);
-					PlotChart(y);
-				}
+				PlotDensity(networkModel);
 			}
 			catch(Exception ex)
 			{
@@ -49,42 +44,33 @@ namespace Main
 			}
 
 			Console.ReadLine();
-        }
-
-		//--------------------------------------------------------------------
-		public static void PlotChart(IEnumerable<double> y)
-		{
-			Application.Init();
-
-			var window = new Window("Plot");
-			window.Resize(1366, 768);
-			window.Add(CreatePlotSurface(y));
-			window.ShowAll();
-			Application.Run();
 		}
 
-		private static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IEnumerable<double> y)
+		// TODO: bad option. need plot all graphcs in one plot
+		public static void PlotDensity(NetworkModel networkModel)
 		{
-			var plotSurface = new NPlot.Gtk.PlotSurface2D();
-			plotSurface.Clear();
-
-			plotSurface.Padding = 40;
-			plotSurface.Add(new Grid { HorizontalGridType = Grid.GridType.Fine, VerticalGridType = Grid.GridType.Fine});
-			plotSurface.Add(new LinePlot{ DataSource = y.ToArray() });
-			plotSurface.Refresh();
-			plotSurface.Show();
-
-			return plotSurface;
+			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
+				foreach (var path in networkModel.Paths)
+				{
+					var t = CreateRange(0, 2, 0.1);
+					var y = networkModel.ComputeGt(path, stream , t);
+					NPlotHelper.PlotChart(y, string.Format("Path {0}, stream {1}", networkModel.Paths.IndexOf(path), stream));
+				}
 		}
-		//--------------------------------------------------------------------
+
+		public static IEnumerable<double> CreateRange(double a, double b, double step)
+		{
+			for (double val = a; val <= b; val += step)
+				yield return val;
+		}
 
 		public static void Output(NetworkModel networkModel, string logFile)
-        {
+		{
 			ConsoleOutput(networkModel);
-            
+
 			if (logFile != null)
 				LogOutput(networkModel, logFile);
-        }
+		}
 
 		public static void ConsoleOutput(NetworkModel networkModel)
 		{
@@ -92,7 +78,7 @@ namespace Main
 
 			ConsoleColorWrite(String.Format("NAME = {0}", networkModel.Name), ConsoleColor.Green);
 			ConsoleColorWrite(String.Format("STREAMS COUNT = {0}", networkModel.StreamsCount), ConsoleColor.Green);
-						
+
 			Console.Write(Environment.NewLine);
 
 			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
@@ -193,27 +179,27 @@ namespace Main
 		}
 
 		private static void LogOutput(NetworkModel networkModel, string logFile)
-        {
-            var data = new List<string>();
+		{
+			var data = new List<string>();
 
 			data.Add("NAME = " + networkModel.Name);
 			data.Add("STREAMS COUNT = " + networkModel.StreamsCount);
 
 			data.Add(Environment.NewLine);
 
-            for (int stream = 0; stream < networkModel.StreamsCount; stream++)
-            {
-                if(networkModel.StreamsCount > 1)
-                    data.Add(string.Format("==================== STREAM {0} ====================", stream + 1));
+			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
+			{
+				if(networkModel.StreamsCount > 1)
+					data.Add(string.Format("==================== STREAM {0} ====================", stream + 1));
 
-                data.Add("ROUTING MATRIX");
-                networkModel.GetRoutingMatrix(stream).ForEachRow(row => 
-                    data.Add(
-                        row.Aggregate("",
-                            (accumulate, item) => accumulate + string.Format("{0:0.000}\t", item)
-                        ).Trim()));
+				data.Add("ROUTING MATRIX");
+				networkModel.GetRoutingMatrix(stream).ForEachRow(row => 
+					data.Add(
+						row.Aggregate("",
+							(accumulate, item) => accumulate + string.Format("{0:0.000}\t", item)
+						).Trim()));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
 				data.Add("LAMBDA");
 				networkModel.Lambda[stream].ForEach(lambda => data.Add(string.Format("{0:0.000}", lambda)));
@@ -233,12 +219,12 @@ namespace Main
 				data.Add("RO");
 				networkModel.Ro[stream].ForEach(ro => data.Add(string.Format("{0:0.000}", ro)));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
-                data.Add("E");
-                networkModel.E[stream].ForEach(e => data.Add(string.Format("{0:0.000}", e)));
+				data.Add("E");
+				networkModel.E[stream].ForEach(e => data.Add(string.Format("{0:0.000}", e)));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
 				data.Add("LAMBDA'");
 				networkModel.LambdaBar[stream].ForEach(lambdaBar => data.Add(string.Format("{0:0.000}", lambdaBar)));
@@ -248,22 +234,22 @@ namespace Main
 				data.Add("RO'");
 				networkModel.RoBar[stream].ForEach(roBar => data.Add(string.Format("{0:0.000}", roBar)));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
-                if(networkModel.StreamsCount > 1)
-                {
-                    data.Add("ROTOTAL");
-                    for (int i = 0; i < networkModel.RoTotal.Length; i++)
-                        data.Add(string.Format("{0:0.000}", networkModel.RoTotal[i]));
+				if(networkModel.StreamsCount > 1)
+				{
+					data.Add("ROTOTAL");
+					for (int i = 0; i < networkModel.RoTotal.Length; i++)
+						data.Add(string.Format("{0:0.000}", networkModel.RoTotal[i]));
 
-                    data.Add(Environment.NewLine);
-                }
+					data.Add(Environment.NewLine);
+				}
 
-                data.Add("STATIONARY PROBABILITY-TIME CHARACTERISTICS");
-                data.Add("W");
-                networkModel.Ws.ForEach(ws => data.Add(string.Format("{0:0.000}", ws)));
+				data.Add("STATIONARY PROBABILITY-TIME CHARACTERISTICS");
+				data.Add("W");
+				networkModel.Ws.ForEach(ws => data.Add(string.Format("{0:0.000}", ws)));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
 				data.Add("U");
 				networkModel.Us[stream].ForEach(us => data.Add(string.Format("{0:0.000}", us)));
@@ -278,25 +264,25 @@ namespace Main
 				data.Add("N");
 				networkModel.Ns[stream].ForEach(ns => data.Add(string.Format("{0:0.000}", ns)));
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
-                data.Add("INTEGRATED PROBABILITY-TIME CHARACTERISTICS");
-                data.Add("PATHS");
-                for (int i = 0; i < networkModel.Paths.Count; i++)
-                    data.Add(
-                        networkModel.Paths[i].Aggregate(string.Empty,
-                            (accumulate, value) => accumulate +
-                            (accumulate == string.Empty ? "" : " -> ") + (value + 1)
-                        )
-                        + " : " + networkModel.TransitionProbabilities[i]
-                    );
+				data.Add("INTEGRATED PROBABILITY-TIME CHARACTERISTICS");
+				data.Add("PATHS");
+				for (int i = 0; i < networkModel.Paths.Count; i++)
+					data.Add(
+						networkModel.Paths[i].Aggregate(string.Empty,
+							(accumulate, value) => accumulate +
+							(accumulate == string.Empty ? "" : " -> ") + (value + 1)
+						)
+						+ " : " + networkModel.TransitionProbabilities[i]
+					);
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
-                data.Add("W");
-                data.Add(networkModel.Wi.ToString());
+				data.Add("W");
+				data.Add(networkModel.Wi.ToString());
 
-                data.Add(Environment.NewLine);
+				data.Add(Environment.NewLine);
 
 				data.Add("U");
 				data.Add(string.Format("{0:0.000}", networkModel.Ui[stream]));
@@ -311,38 +297,32 @@ namespace Main
 				data.Add("N");
 				data.Add(string.Format("{0:0.000}", networkModel.Ni[stream]));
 
-                if(networkModel.StreamsCount > 1)
-                {
-                    data.Add("==================================================");
+				if(networkModel.StreamsCount > 1)
+				{
+					data.Add("==================================================");
 
 					if(stream != networkModel.StreamsCount - 1)
-                        data.Add(Environment.NewLine);
-                }
-            }
+						data.Add(Environment.NewLine);
+				}
+			}
 
 			if (!Directory.Exists(Path.GetDirectoryName(logFile)))
 				Directory.CreateDirectory(Path.GetDirectoryName(logFile));
 
 			File.WriteAllLines(logFile, data, Encoding.UTF8);
-        }
-
-        public static void ConsoleColorWrite(String message, ConsoleColor color, bool writeLine = true)
-        {
-            var originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-
-            if (writeLine)
-                Console.WriteLine(message);
-            else
-                Console.Write(message);
-
-            Console.ForegroundColor = originalColor;
-        }
-
-		public static IEnumerable<double> CreateRange(double a, double b, double step)
-		{
-			for (double val = a; val <= b; val += step)
-				yield return val;
 		}
-    }
+
+		public static void ConsoleColorWrite(String message, ConsoleColor color, bool writeLine = true)
+		{
+			var originalColor = Console.ForegroundColor;
+			Console.ForegroundColor = color;
+
+			if (writeLine)
+				Console.WriteLine(message);
+			else
+				Console.Write(message);
+
+			Console.ForegroundColor = originalColor;
+		}
+	}
 }

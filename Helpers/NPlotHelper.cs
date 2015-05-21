@@ -1,67 +1,47 @@
 ﻿using System;
 using NPlot;
 using Helpers;
+using System.Collections;
+using System.Collections.Generic;
+using Gtk;
+using System.Linq;
 
 namespace Helpers
 {
     public static class NPlotHelper
     {
-//        public static LinePlot CreatePlot(double[] y)
-//        {
-//            return new LinePlot()
-//            {
-////                AbscissaData = x,
-//                OrdinateData = y
-//            };
-//        }
-//
-//        public static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IDrawable plot)
-//        {
-//            var plotSurface = new NPlot.Gtk.PlotSurface2D();
-//            plotSurface.Clear();
-//
-//            plotSurface.Padding = 40;
-//            plotSurface.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-//            plotSurface.Add(new Grid { HorizontalGridType = Grid.GridType.None, VerticalGridType = Grid.GridType.Fine});
-//            plotSurface.Add(plot);
-////            plotSurface.YAxis1.Label = "Frequency";
-//            plotSurface.Refresh();
-//            plotSurface.Show();
-//
-//            return plotSurface;
-//        }
+		public static void PlotChart(IEnumerable<double> y, string label)
+		{
+			Application.Init();
 
-        public static HistogramPlot CreateHistogramPlot(double[] frequency)
-        {
-            return new HistogramPlot()
-            {
-                OrdinateData = frequency,
-                RectangleBrush = RectangleBrushes.Solid.Black,
-                Color = System.Drawing.Color.Black,
-                Filled = true,
-                BaseWidth = 0.5f,
-            };
-        }
+			var window = new Window("");
+			window.Resize(1366, 768);
+			window.Add(CreatePlotSurface(y, label));
+			window.ShowAll();
+			Application.Run();
+		}
 
-        public static HistogramPlot CreateHistogramPlot(double[] randArray, int min, int max, int n)
-        {
-            return CreateHistogramPlot(HistogramHelper.ComputeFrequency(randArray, min, max, n));
-        }
+		private static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IEnumerable<double> y, string label)
+		{
+			var plotSurface = new NPlot.Gtk.PlotSurface2D();
+			plotSurface.Clear();
 
-        public static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IDrawable plot)
-        {
-            var plotSurface = new NPlot.Gtk.PlotSurface2D();
-            plotSurface.Clear();
+			plotSurface.Padding = 40;
+			plotSurface.Add(new Grid { HorizontalGridType = Grid.GridType.Fine, VerticalGridType = Grid.GridType.Fine});
 
-            plotSurface.Padding = 40;
-            plotSurface.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            plotSurface.Add(new Grid { HorizontalGridType = Grid.GridType.None, VerticalGridType = Grid.GridType.Fine});
-            plotSurface.Add(plot);
-            plotSurface.YAxis1.Label = "Frequency";
-            plotSurface.Refresh();
-            plotSurface.Show();
+			plotSurface.Legend = new Legend
+				{
+					YOffset = 16,
+					HorizontalEdgePlacement = Legend.Placement.Outside,
+					VerticalEdgePlacement = Legend.Placement.Inside
+				};
+			plotSurface.Legend.AttachTo(PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Right);
 
-            return plotSurface;
-        }
+			plotSurface.Add(new LinePlot{ DataSource = y.ToArray(), Label = label });
+			plotSurface.Refresh();
+			plotSurface.Show();
+
+			return plotSurface;
+		}
     }
 }
