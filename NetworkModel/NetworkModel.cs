@@ -203,8 +203,6 @@ namespace Modeling
         #region COMPUTE PROBABILITY DENSITY
 		public IEnumerable<double> ComputeGt(Vector<int> path, int stream, IEnumerable<double> t)
         {
-//            var result = new Vector<double>(t.Count());
-
             for (int i = 0; i < t.Count(); i++)
 			{
 				var result = 0.0;
@@ -216,8 +214,6 @@ namespace Modeling
 
 				yield return result;
 			}
-
-//            return result;
         }
 
         private double ComputeHi(Vector<int> path, int i, int stream)
