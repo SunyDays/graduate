@@ -172,6 +172,7 @@ namespace Modeling
         private double ComputeIntegralChar(Vector<double> staticChar)
         {
             var integralChar = staticChar[StartNode] + staticChar[TargetNode];
+
             for (int i = 0; i < Paths.Count; i++)
             {
                 var temp = 0.0;
@@ -190,7 +191,7 @@ namespace Modeling
 
             var pathsProbabilities = 
                 Paths.Select(path => 
-                    path.Where((item, index) => index < path.Length -1).Select((item, index) => new {item, index})
+                    path.Where((item, index) => index < path.Length - 1).Select((item, index) => new {item, index})
                     .Aggregate(1.0, (accumulate, anon) => accumulate *= matrix[anon.item, path[anon.index + 1]]));
 
             var s = pathsProbabilities.Sum();

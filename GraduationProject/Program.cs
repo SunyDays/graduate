@@ -24,29 +24,23 @@ namespace Main
             var targetNodeIndex = args.GetArgValue<int>("targetnode");
 			var log = args.ContainsArg("log");
 
-//			foreach (var netconfig in Directory.GetFiles("/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations")
-//				.Where(fileName => !fileName.EndsWith("~")))
-//			{
-//				Console.Clear();
-//
-//				string logFile = null;
-////				if (log)
-//					logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
-//						Path.GetFileNameWithoutExtension(netconfig) + ".log");
-//
-//				var networkModel = new NetworkModel(netconfig, 1, 4);
-//
-//				Output(networkModel, logFile);
-//			}
-
 			string logFile = null;
 			if (log)
 				logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
 					Path.GetFileNameWithoutExtension(netconfig) + ".log");
 
-			var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
+			try
+			{
+				var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
+				Output(networkModel, logFile);
+			}
+			catch(Exception ex)
+			{
+				ConsoleColorWrite("ERROR:", ConsoleColor.Red);
+				Console.WriteLine(ex);
+			}
 
-			Output(networkModel, logFile);
+			Console.ReadLine();
         }
 
 		public static void Output(NetworkModel networkModel, string logFile)
@@ -55,8 +49,6 @@ namespace Main
             
 			if (logFile != null)
 				LogOutput(networkModel, logFile);
-
-			Console.ReadLine();
         }
 
 		public static void ConsoleOutput(NetworkModel networkModel)
