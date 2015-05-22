@@ -46,16 +46,21 @@ namespace Main
 			Console.ReadLine();
 		}
 
-		// TODO: bad option. need plot all graphcs in one plot
+		// TODO: need graphs only for shortest and longest paths
 		public static void PlotDensity(NetworkModel networkModel)
 		{
+			var t = CreateRange(0, 0.5, 0.010);
+			var data = new List<IEnumerable<double>>();
+			var labels = new List<string>();
+
 			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
 				foreach (var path in networkModel.Paths)
 				{
-					var t = CreateRange(0, 2, 0.1);
-					var y = networkModel.ComputeGt(path, stream , t);
-					NPlotHelper.PlotChart(y, string.Format("Path {0}, stream {1}", networkModel.Paths.IndexOf(path), stream));
+					data.Add(networkModel.ComputeGt(path, stream, t));
+					labels.Add(string.Format("Path {0}, stream {1}", networkModel.Paths.IndexOf(path), stream));
 				}
+
+			NPlotHelper.PlotCharts(data, t, labels);
 		}
 
 		public static IEnumerable<double> CreateRange(double a, double b, double step)

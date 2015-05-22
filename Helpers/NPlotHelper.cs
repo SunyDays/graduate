@@ -5,23 +5,27 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using System.Linq;
+using System.Security.Principal;
+using System.Drawing;
+using System.Reflection;
+using System.Security.Cryptography;
 
 namespace Helpers
 {
     public static class NPlotHelper
     {
-		public static void PlotChart(IEnumerable<double> y, string label)
+		public static void PlotCharts(IEnumerable<IEnumerable<double>> data, IEnumerable<double> t, IEnumerable<string> labels)
 		{
 			Application.Init();
 
 			var window = new Window("");
 			window.Resize(1366, 768);
-			window.Add(CreatePlotSurface(y, label));
+			window.Add(CreatePlotSurface(data, t, labels));
 			window.ShowAll();
 			Application.Run();
 		}
 
-		private static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IEnumerable<double> y, string label)
+		private static NPlot.Gtk.PlotSurface2D CreatePlotSurface(IEnumerable<IEnumerable<double>> data, IEnumerable<double> t, IEnumerable<string> labels)
 		{
 			var plotSurface = new NPlot.Gtk.PlotSurface2D();
 			plotSurface.Clear();
@@ -37,11 +41,34 @@ namespace Helpers
 				};
 			plotSurface.Legend.AttachTo(PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Right);
 
-			plotSurface.Add(new LinePlot{ DataSource = y.ToArray(), Label = label });
+			for (int i = 0; i < data.Count(); i++)
+				plotSurface.Add(new LinePlot
+					{
+						AbscissaData = t.ToArray(),
+//						DataSource = data.ElementAt(i).ToArray(),
+						OrdinateData = data.ElementAt(i).ToArray(),
+						Label = labels.ElementAt(i),
+						Pen = new Pen(GetRandomColor())
+					});
+
 			plotSurface.Refresh();
 			plotSurface.Show();
 
 			return plotSurface;
 		}
+
+		private static Random random = new Random(DateTime.Now.Millisecond);
+
+		private static Color GetRandomColor()
+		{
+			return Color.FromArgb(255, random.Next(0, 191), random.Next(0, 191), random.Next(0, 191));
+		}
+
+//		private static Color GetRandomColor()
+//		{
+//			var colors = typeof(Color).GetProperties();
+//
+//			return Color.FromArgb(255, Color.FromName(colors[random.Next(0, colors.Count() - 1)].Name));
+//		}
     }
 }

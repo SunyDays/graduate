@@ -30,5 +30,19 @@ namespace Helpers
 
             return paths;
         }
+
+		// TODO: breadth-first search
+		public static Vector<int> GetShortestPath(Matrix<double> matrix, int startNode)
+		{
+			var visited = new bool[matrix.RowsCount];
+			var queue = new Queue<int>(startNode);
+
+
+		}
+
+		public static Vector<int> GetLongestPath(Matrix<double> matrix)
+		{
+
+		}
     }
 }
