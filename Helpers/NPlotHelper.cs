@@ -45,10 +45,9 @@ namespace Helpers
 				plotSurface.Add(new LinePlot
 					{
 						AbscissaData = t.ToArray(),
-//						DataSource = data.ElementAt(i).ToArray(),
 						OrdinateData = data.ElementAt(i).ToArray(),
 						Label = labels.ElementAt(i),
-						Pen = new Pen(GetRandomColor())
+						Pen = new Pen(GetRandomColor(), 2)
 					});
 
 			plotSurface.Refresh();
@@ -57,18 +56,11 @@ namespace Helpers
 			return plotSurface;
 		}
 
-		private static Random random = new Random(DateTime.Now.Millisecond);
+		private static readonly Random random = new Random(DateTime.Now.Millisecond);
 
 		private static Color GetRandomColor()
 		{
 			return Color.FromArgb(255, random.Next(0, 191), random.Next(0, 191), random.Next(0, 191));
 		}
-
-//		private static Color GetRandomColor()
-//		{
-//			var colors = typeof(Color).GetProperties();
-//
-//			return Color.FromArgb(255, Color.FromName(colors[random.Next(0, colors.Count() - 1)].Name));
-//		}
     }
 }

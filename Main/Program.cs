@@ -46,19 +46,37 @@ namespace Main
 			Console.ReadLine();
 		}
 
-		// TODO: need graphs only for shortest and longest paths
 		public static void PlotDensity(NetworkModel networkModel)
 		{
-			var t = CreateRange(0, 0.5, 0.010);
-			var data = new List<IEnumerable<double>>();
+			var t = CreateRange(0, 0.003, 0.00001);
+			var data = new List<Vector<double>>();
 			var labels = new List<string>();
 
-			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
-				foreach (var path in networkModel.Paths)
-				{
-					data.Add(networkModel.ComputeGt(path, stream, t));
-					labels.Add(string.Format("Path {0}, stream {1}", networkModel.Paths.IndexOf(path), stream));
-				}
+			var shortestPath = networkModel.Paths.Min();
+			data.Add(new Vector<double>(networkModel.ComputeDensity(shortestPath, 0, t)));
+
+			var longestPath = networkModel.Paths.Max();
+			if(shortestPath.Length != longestPath.Length)
+			{
+				data.Add(new Vector<double>(networkModel.ComputeDensity(longestPath, 0, t)));
+
+				labels.Add(string.Format("Shortest path: {0}",
+					shortestPath.Aggregate(string.Empty,
+						(accumulate, value) => accumulate +
+						(accumulate == string.Empty ? "" : " -> ") + value
+					)));
+				labels.Add(string.Format("Longest path: {0}",
+						longestPath.Aggregate(string.Empty,
+							(accumulate, value) => accumulate +
+							(accumulate == string.Empty ? "" : " -> ") + value
+						)));
+			}
+			else
+				labels.Add(string.Format("Path: {0}",
+					shortestPath.Aggregate(string.Empty,
+						(accumulate, value) => accumulate +
+						(accumulate == string.Empty ? "" : " -> ") + value
+					)));
 
 			NPlotHelper.PlotCharts(data, t, labels);
 		}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Types
 {
     [Serializable]
-    public class Vector<T> : IEnumerable<T>
+	public class Vector<T> : IEnumerable<T>, IComparable<Vector<T>>
     {
         private List<T> _vector;
         public int Length{ get; private set;}
@@ -158,5 +158,12 @@ namespace Types
             return GetEnumerator();
         }
         #endregion
+
+		#region IComparable implementation
+		public int CompareTo(Vector<T> other)
+		{
+			return this.Length - other.Length;
+		}
+		#endregion
     }
 }

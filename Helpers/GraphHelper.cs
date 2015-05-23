@@ -1,14 +1,21 @@
 ﻿using System.Collections.Generic;
 using Types;
 using System.Linq;
+using System.Collections;
+using System;
+using System.Diagnostics;
+using GLib;
 
 namespace Helpers
 {
     public static class GraphHelper
     {
-        public static List<Vector<int>> GetAllPaths(Matrix<double> matrix, int startNode, int targetNode)
+		public static List<Vector<int>> GetPathsBetween(Matrix<double> matrix, int startNode, int targetNode)
         {
-            var paths = new List<Vector<int>>();
+			if (startNode == targetNode)
+				throw new ArgumentException("stratNode and targetNode must be different.");
+
+			var paths = new List<Vector<int>>();
 
             // exclude routing loops
             matrix.ForEachRow(row => row[startNode] = 0);
@@ -19,30 +26,32 @@ namespace Helpers
                     continue;
 
                 if (intermediateNode == targetNode)
-                    paths.Add(new Vector<int>(new[] { startNode, targetNode }));
+					paths.Add(new Vector<int>(new[] { startNode, targetNode }));
                 else
                 {
-                    List<Vector<int>> localPaths = GetAllPaths(matrix.Clone(), intermediateNode, targetNode);
+					List<Vector<int>> localPaths = GetPathsBetween(matrix.Clone(), intermediateNode, targetNode);
                     if (localPaths.Any())
-                        localPaths.ForEach(path => paths.Add(path.InsertElement(0, startNode)));
+						localPaths.ForEach(path =>
+							{
+								path.InsertElement(0, startNode);
+								paths.Add(path);
+							});
                 }
             }
 
             return paths;
         }
 
-		// TODO: breadth-first search
-		public static Vector<int> GetShortestPath(Matrix<double> matrix, int startNode)
+		public static List<Vector<int>> GetAllPaths(Matrix<double> matrix)
 		{
-			var visited = new bool[matrix.RowsCount];
-			var queue = new Queue<int>(startNode);
+			var paths = new List<Vector<int>>();
 
+			for (int startNode = 0; startNode < matrix.RowsCount; startNode++)
+				for (int targetNode = 0; targetNode < matrix.RowsCount; targetNode++)
+					if (startNode != targetNode)
+						paths.AddRange(GetPathsBetween(matrix, startNode, targetNode));
 
-		}
-
-		public static Vector<int> GetLongestPath(Matrix<double> matrix)
-		{
-
+			return paths;
 		}
     }
 }

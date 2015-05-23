@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/network_demo4.netconfig" /startnode:1 /targetnode:4 /log</Commandlineparameters>
+    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/network_test5.netconfig" /startnode:0 /targetnode:3 /log</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>

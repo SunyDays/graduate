@@ -31,7 +31,8 @@ namespace Modeling
         public List<Vector<double>> Ro              { get; private set; }
         public List<Vector<double>> RoBar           { get; private set; }
         public Vector<double> RoTotal               { get; private set; }
-        public List<Vector<int>> Paths              { get; private set; }
+		public List<Vector<int>> AllPaths             { get; private set; }
+		public List<Vector<int>> Paths             { get; private set; }
         public List<double> TransitionProbabilities { get; private set; }
 
         public int StartNode                        { get; private set; }
@@ -52,8 +53,8 @@ namespace Modeling
 
         private NetworkModel(int startNode, int targetNode)
         {
-            StartNode = startNode - 1;
-            TargetNode = targetNode - 1;
+            StartNode = startNode;
+            TargetNode = targetNode;
 
             Lambda = new List<Vector<double>>();
             Mu = new List<Vector<double>>();
@@ -97,7 +98,7 @@ namespace Modeling
 
         private void ComputeParameters()
         {
-            Lambda.ForEach(lambdas => Lambda0.AddElement(lambdas.Sum()));
+			Lambda.ForEach(lambdas => Lambda0.AddElement(lambdas.Sum()));
             RoTotal = new Vector<double>(NodesCount);
 
             for (int stream = 0; stream < StreamsCount; stream++)
@@ -116,11 +117,15 @@ namespace Modeling
                 RoTotal = RoTotal.AddElementWise(RoBar.Last());
 
                 if(RoBar[stream].Any(roBar => roBar > 1))
-                    throw new ArgumentOutOfRangeException(string.Format("RoBar, stream {0}", stream), "Some Ro is greater than zero.");
+                    throw new ArgumentOutOfRangeException(string.Format("RoBar, stream {0}", stream), "Some Ro' is greater than zero.");
             }
 
             if (RoTotal.Any(roTotal => roTotal > 1))
                 throw new ArgumentOutOfRangeException("RoTotal", "Some RoTotal is greater than zero.");
+
+			AllPaths = GraphHelper.GetAllPaths(RoutingMatrix.Clone().RemoveColumn(0))
+				.OrderBy(path => path.Length).ToList();
+			Paths = AllPaths.Where(path => path.First() == StartNode && path.Last() == TargetNode).ToList();
         }
 
         private Matrix<double> GetExtendedMatrix(int streamIndex)
@@ -155,28 +160,27 @@ namespace Modeling
             }
         }
 
-        private void ComputeIntegratedPTC()
+		private void ComputeIntegratedPTC()
         {
-            Paths = GraphHelper.GetAllPaths(RoutingMatrix.Clone().RemoveColumn(0), StartNode, TargetNode);
-            ComputePathsProbabilities();
+			ComputeTransitionProbabilities();
 
             Wi = ComputeIntegralChar(Ws);
             for (int stream = 0; stream < StreamsCount; stream++)
             {
                 Ui.Add(ComputeIntegralChar(Us[stream]));
-                Li.Add(ComputeIntegralChar(Ls[stream]));
-                Ni.Add(ComputeIntegralChar(Ns[stream]));
+				Li.Add(ComputeIntegralChar(Ls[stream]));
+				Ni.Add(ComputeIntegralChar(Ns[stream]));
             }
         }
 
-        private double ComputeIntegralChar(Vector<double> staticChar)
+		private double ComputeIntegralChar(Vector<double> staticChar)
         {
             var integralChar = staticChar[StartNode] + staticChar[TargetNode];
 
-            for (int i = 0; i < Paths.Count; i++)
+			for (int i = 0; i < Paths.Count(); i++)
             {
                 var temp = 0.0;
-                for (int j = 1; j < Paths[i].Length - 1; j++)
+				for (int j = 1; j < Paths.ElementAt(i).Count() - 1; j++)
                     temp += staticChar[j];
 
                 integralChar += TransitionProbabilities[i] * temp;
@@ -185,13 +189,13 @@ namespace Modeling
             return integralChar;
         }
 
-        private void ComputePathsProbabilities()
+		private void ComputeTransitionProbabilities()
         {
             var matrix = RoutingMatrix.Clone().RemoveColumn(0);
 
             var pathsProbabilities = 
                 Paths.Select(path => 
-                    path.Where((item, index) => index < path.Length - 1).Select((item, index) => new {item, index})
+					path.Where((item, index) => index < path.Length - 1).Select((item, index) => new {item, index})
                     .Aggregate(1.0, (accumulate, anon) => accumulate *= matrix[anon.item, path[anon.index + 1]]));
 
             var s = pathsProbabilities.Sum();
@@ -201,7 +205,7 @@ namespace Modeling
         #endregion
 
         #region COMPUTE PROBABILITY DENSITY
-		public IEnumerable<double> ComputeGt(Vector<int> path, int stream, IEnumerable<double> t)
+		public IEnumerable<double> ComputeDensity(Vector<int> path, int stream, IEnumerable<double> t)
         {
             for (int i = 0; i < t.Count(); i++)
 			{
@@ -216,7 +220,7 @@ namespace Modeling
 			}
         }
 
-        private double ComputeHi(Vector<int> path, int i, int stream)
+		private double ComputeHi(Vector<int> path, int i, int stream)
         {
             var Hi = 1.0;
 
