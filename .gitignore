@@ -1,4 +1,7 @@
 ### MonoDevelop ###
+#my logs
+*.log
+
 #User Specific
 *.userprefs
 *.usertasks
