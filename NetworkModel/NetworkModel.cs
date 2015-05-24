@@ -135,7 +135,7 @@ namespace Modeling
             matrix.RemoveRow(0);
             matrix.AddColumn(matrix.GetColumn(0).Negate());
             matrix.RemoveColumn(0);
-            matrix = matrix.ReplaceDiagonalElements(-1);
+            matrix.ReplaceDiagonalElements(-1);
 
             return matrix;
          }

@@ -269,6 +269,14 @@ namespace Types
         }
         #endregion
 
+		public Matrix<T> ReplaceDiagonalElements(T value)
+		{
+			for (int i = 0; i < Math.Min(RowsCount, ColumnsCount); i++)
+				_matrix[i][i] = value;
+
+			return this;
+		}
+
         public Matrix<T> Transpose()
         {
             var transposeMatrix = new Matrix<T>(ColumnsCount, 1);
