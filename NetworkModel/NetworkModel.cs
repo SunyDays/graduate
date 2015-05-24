@@ -1,16 +1,9 @@
 using System;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using Helpers;
 using Types;
-using System.Diagnostics.SymbolStore;
-using System.IO.Pipes;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Runtime.Remoting.Proxies;
-using System.Runtime.InteropServices;
 
 namespace Modeling
 {
@@ -355,8 +348,6 @@ namespace Modeling
         {
             return element.Attribute(attributeName).Value.CastObject<T>();
         }
-
-
         #endregion
     }
 }
