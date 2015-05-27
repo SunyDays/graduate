@@ -24,8 +24,8 @@ namespace Modeling
         public List<Vector<double>> Ro              { get; private set; }
         public List<Vector<double>> RoBar           { get; private set; }
         public Vector<double> RoTotal               { get; private set; }
-		public List<Vector<int>> AllPaths             { get; private set; }
-		public List<Vector<int>> Paths             { get; private set; }
+		public List<Vector<int>> AllPaths           { get; private set; }
+		public List<Vector<int>> Paths              { get; private set; }
         public List<double> TransitionProbabilities { get; private set; }
 
         public int StartNode                        { get; private set; }
