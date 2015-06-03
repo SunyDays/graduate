@@ -8,6 +8,13 @@ namespace Types
 {
     public static class VectorExtensions
     {
+		public static string ToString<T>(this Vector<T> vec, string separator)
+		{
+			return vec.Aggregate(string.Empty,
+				(accumulate, value) => accumulate +
+				(accumulate == string.Empty ? "" : separator) + value);
+		}
+
         public static Vector<double> Add(this Vector<double> vector, double value)
         {
             return new Vector<double>(vector.Select(element => element + value));

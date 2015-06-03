@@ -61,22 +61,13 @@ namespace Main
 				data.Add(new Vector<double>(networkModel.ComputeDensity(longestPath, 0, t)));
 
 				labels.Add(string.Format("Shortest path: {0}",
-					shortestPath.Aggregate(string.Empty,
-						(accumulate, value) => accumulate +
-						(accumulate == string.Empty ? "" : " -> ") + value
-					)));
+						shortestPath.ToString(" -> ")));
 				labels.Add(string.Format("Longest path: {0}",
-						longestPath.Aggregate(string.Empty,
-							(accumulate, value) => accumulate +
-							(accumulate == string.Empty ? "" : " -> ") + value
-						)));
+					longestPath.ToString(" -> ")));
 			}
 			else
 				labels.Add(string.Format("Path: {0}",
-					shortestPath.Aggregate(string.Empty,
-						(accumulate, value) => accumulate +
-						(accumulate == string.Empty ? "" : " -> ") + value
-					)));
+					shortestPath.ToString(" -> ")));
 
 			NPlotHelper.PlotCharts(data, t, labels);
 		}
@@ -176,10 +167,7 @@ namespace Main
 				ConsoleColorWrite("PATHS", ConsoleColor.Green);
 				for (int i = 0; i < networkModel.Paths.Count; i++)
 					Console.WriteLine(
-						networkModel.Paths[i].Aggregate(string.Empty,
-							(accumulate, value) => accumulate +
-							(accumulate == string.Empty ? "" : " -> ") + value
-						)
+						networkModel.Paths[i].ToString(" -> ")
 						+ " : " + networkModel.TransitionProbabilities[i]
 					);
 
@@ -293,10 +281,7 @@ namespace Main
 				data.Add("PATHS");
 				for (int i = 0; i < networkModel.Paths.Count; i++)
 					data.Add(
-						networkModel.Paths[i].Aggregate(string.Empty,
-							(accumulate, value) => accumulate +
-							(accumulate == string.Empty ? "" : " -> ") + (value + 1)
-						)
+						networkModel.Paths[i].ToString(" -> ")
 						+ " : " + networkModel.TransitionProbabilities[i]
 					);
 

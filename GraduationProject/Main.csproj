@@ -8,6 +8,8 @@
     <RootNamespace>Main</RootNamespace>
     <AssemblyName>GraduationProject</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,14 +60,4 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Helpers\Helpers.csproj">
-      <Project>{573F05BC-4117-43DC-91AF-14A544690CD6}</Project>
-      <Name>Helpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NetworkModel\NetworkModel.csproj">
-      <Project>{8E39CF8A-3018-4643-BF6A-23E216583EF8}</Project>
-      <Name>NetworkModel</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>
