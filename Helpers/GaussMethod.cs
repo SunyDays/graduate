@@ -29,9 +29,6 @@ namespace Helpers
             if(extendedMatrix.RowsCount < extendedMatrix.ColumnsCount - 1)
                 throw new ArgumentException("The number of equations is less than the number of unknowns.");
 
-//            if(extendedMatrix.GetList().TrueForAll(row => row.GetList().TrueForAll(element => element.Equals(0)))
-//                return null;
-
             if (extendedMatrix.ColumnsCount - 1 < extendedMatrix.RowsCount)
                 extendedMatrix.RemoveRows(extendedMatrix.ColumnsCount,
                     extendedMatrix.RowsCount - extendedMatrix.ColumnsCount);

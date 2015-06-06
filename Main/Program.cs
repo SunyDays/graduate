@@ -21,13 +21,19 @@ namespace Main
 	{
 		public static void Main(string[] args)
 		{
+			if(args.ContainsArg("ethernet"))
+			{
+				EthernetHelp();
+				Console.WriteLine();
+			}
+
 			var netconfig = args.GetArgValue<string>("netconfig");
 			var startNodeIndex = args.GetArgValue<int>("startnode");
 			var targetNodeIndex = args.GetArgValue<int>("targetnode");
 			var log = args.ContainsArg("log");
 
 			string logFile = null;
-			if (log) 
+			if (log)
 				logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
 					Path.GetFileNameWithoutExtension(netconfig) + ".log");
 
@@ -331,6 +337,23 @@ namespace Main
 				Console.Write(message);
 
 			Console.ForegroundColor = originalColor;
+		}
+
+		private static void EthernetHelp()
+		{
+			foreach (var ethernet in Enum.GetValues(typeof(ProtocolHelper.EthernetType)))
+			{
+				foreach (var frame in Enum.GetValues(typeof(ProtocolHelper.FrameLength)))
+				{
+					ConsoleColorWrite(string.Format(
+						"{0}, {1}: ", (ProtocolHelper.EthernetType)ethernet, frame), ConsoleColor.Green, false);
+					Console.WriteLine(string.Format("{0} frame/sec",
+						ProtocolHelper.GetCapacity((ProtocolHelper.EthernetType)ethernet,
+							(ProtocolHelper.FrameLength)frame)));
+				}				
+
+				Console.WriteLine();
+			}
 		}
 	}
 }

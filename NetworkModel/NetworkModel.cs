@@ -324,7 +324,7 @@ namespace Modeling
             }
             catch (FormatException)
             {
-                frameLength = (int)Enum.Parse(typeof(ProtocolHelper.FrameRange), element.Attribute("FrameLength").Value);
+                frameLength = (int)Enum.Parse(typeof(ProtocolHelper.FrameLength), element.Attribute("FrameLength").Value);
             }
 
             return ProtocolHelper.GetCapacity(ethernetType, frameLength);
