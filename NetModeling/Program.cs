@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Runtime.CompilerServices;
 
-namespace Main
+namespace NetModeling
 {
 	class MainClass
 	{
@@ -27,21 +27,26 @@ namespace Main
 				Console.WriteLine();
 			}
 
-			var netconfig = args.GetArgValue<string>("netconfig");
-			var startNodeIndex = args.GetArgValue<int>("startnode");
-			var targetNodeIndex = args.GetArgValue<int>("targetnode");
-			var log = args.ContainsArg("log");
-
-			string logFile = null;
-			if (log)
-				logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
-					Path.GetFileNameWithoutExtension(netconfig) + ".log");
-
 			try
 			{
+				var netconfig = args.GetArgValue<string>("netconfig");
+				var startNodeIndex = args.GetArgValue<int>("startnode");
+				var targetNodeIndex = args.GetArgValue<int>("targetnode");
+
+				var log = args.ContainsArg("log");
+
+				string logFile = null;
+				if (log)
+					logFile = Path.Combine(Path.GetDirectoryName(netconfig), "logs",
+						Path.GetFileNameWithoutExtension(netconfig) + ".log");
+
 				var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
 				Output(networkModel, logFile);
 				PlotDensity(networkModel);
+
+				#if !DEBUG
+				Console.ReadLine();
+				#endif
 			}
 			catch(Exception ex)
 			{
@@ -49,7 +54,9 @@ namespace Main
 				Console.WriteLine(ex);
 			}
 
+			#if DEBUG
 			Console.ReadLine();
+			#endif
 		}
 
 		public static void PlotDensity(NetworkModel networkModel)
@@ -67,7 +74,7 @@ namespace Main
 				data.Add(new Vector<double>(networkModel.ComputeDensity(longestPath, 0, t)));
 
 				labels.Add(string.Format("Shortest path: {0}",
-						shortestPath.ToString(" -> ")));
+					shortestPath.ToString(" -> ")));
 				labels.Add(string.Format("Longest path: {0}",
 					longestPath.ToString(" -> ")));
 			}
@@ -104,7 +111,7 @@ namespace Main
 			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
 			{
 				if(networkModel.StreamsCount > 1)
-					ConsoleColorWrite(String.Format("==================== STREAM {0} ====================", stream + 1),
+					ConsoleColorWrite(String.Format("==================== STREAM {0} ====================", stream),
 						ConsoleColor.White);
 
 				ConsoleColorWrite("ROUTING MATRIX", ConsoleColor.Green);
@@ -207,7 +214,7 @@ namespace Main
 			for (int stream = 0; stream < networkModel.StreamsCount; stream++)
 			{
 				if(networkModel.StreamsCount > 1)
-					data.Add(string.Format("==================== STREAM {0} ====================", stream + 1));
+					data.Add(string.Format("==================== STREAM {0} ====================", stream));
 
 				data.Add("ROUTING MATRIX");
 				networkModel.GetRoutingMatrix(stream).ForEachRow(row => 
@@ -223,11 +230,6 @@ namespace Main
 
 				data.Add(Environment.NewLine);
 
-				data.Add("LAMBDA0");
-				data.Add(networkModel.Lambda0[stream].ToString());
-
-				data.Add(Environment.NewLine);
-
 				data.Add("MU");
 				networkModel.Mu[stream].ForEach(mu => data.Add(string.Format("{0:0.000}", mu)));
 
@@ -235,6 +237,11 @@ namespace Main
 
 				data.Add("RO");
 				networkModel.Ro[stream].ForEach(ro => data.Add(string.Format("{0:0.000}", ro)));
+
+				data.Add(Environment.NewLine);
+
+				data.Add("LAMBDA0");
+				data.Add(networkModel.Lambda0[stream].ToString());
 
 				data.Add(Environment.NewLine);
 

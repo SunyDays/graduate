@@ -3,29 +3,28 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{482A50EC-2E4F-46AF-9B4E-23C621792BD5}</ProjectGuid>
+    <ProjectGuid>{B5EA0C75-62E6-44A4-B6A2-FF237DD3EEC1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Maintest</RootNamespace>
-    <AssemblyName>Maintest</AssemblyName>
+    <RootNamespace>NetModeling</RootNamespace>
+    <AssemblyName>netmodeling</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/network_demo4.netconfig" /startnode:0 /targetnode:3 /log</Commandlineparameters>
-    <ConsolePause>false</ConsolePause>
+    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/demo4.netconfig" /startnode:0 /targetnode:3 /log</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -35,23 +34,20 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Package>glib-sharp-2.0</Package>
-    </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-dotnet, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-dotnet-2.0</Package>
     </Reference>
-    <Reference Include="NPlot">
-      <HintPath>..\..\nplot-gtk-0.9.9.2\lib\NPlot.dll</HintPath>
-    </Reference>
     <Reference Include="NPlot.Gtk">
       <HintPath>..\..\nplot-gtk-0.9.9.2\lib\NPlot.Gtk.dll</HintPath>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>glib-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="NPlot">
+      <HintPath>..\..\nplot-gtk-0.9.9.2\lib\NPlot.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

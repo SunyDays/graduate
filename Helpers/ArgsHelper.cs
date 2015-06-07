@@ -9,9 +9,11 @@ namespace Helpers
     {
         public static T GetArgValue<T>(this string[] args, string argName)
         {
-            object value = args.Single(arg => arg.StartsWith("/" + argName)).Split(':').Last();
+			var arg = args.SingleOrDefault(argument => argument.StartsWith("/" + argName));
+			if(arg == null)
+				throw new ArgumentException(string.Format("Need argument {0}.", argName));
 
-            return value.CastObject<T>();
+			return arg.Split(':').Last().CastObject<T>();
         }
 
 		public static bool ContainsArg(this string[] args, string argName)

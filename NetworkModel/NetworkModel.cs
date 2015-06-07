@@ -19,7 +19,7 @@ namespace Modeling
         public Vector<double> Lambda0               { get; private set; }
         public int StreamsCount                     { get; private set; }
         public int NodesCount                       { get; private set; }
-        public List<Vector<double>> InputIntensity  { get; private set; }
+        public List<Vector<double>> InputProbability{ get; private set; }
         public List<Vector<double>> E               { get; private set; }
         public List<Vector<double>> LambdaBar       { get; private set; }
         public List<Vector<double>> Ro              { get; private set; }
@@ -53,7 +53,7 @@ namespace Modeling
             Lambda = new List<Vector<double>>();
             Mu = new List<Vector<double>>();
             Lambda0 = new Vector<double>();
-            InputIntensity = new List<Vector<double>>();
+			InputProbability = new List<Vector<double>>();
             E = new List<Vector<double>>();
             LambdaBar = new List<Vector<double>>();
             Ro = new List<Vector<double>>();
@@ -85,7 +85,7 @@ namespace Modeling
                 throw new ArgumentException();
 
             var streamRoutingMatrix = RoutingMatrix.Clone();
-            streamRoutingMatrix.InsertRow(0, InputIntensity[streamIndex]);
+			streamRoutingMatrix.InsertRow(0, InputProbability[streamIndex]);
 
             return streamRoutingMatrix;
         }
@@ -98,7 +98,7 @@ namespace Modeling
             for (int stream = 0; stream < StreamsCount; stream++)
             {
                 // input intensity
-                InputIntensity.Add(Lambda[stream].Clone().InsertElement(0, 0).Divide(Lambda0[stream]));
+				InputProbability.Add(Lambda[stream].Clone().InsertElement(0, 0).Divide(Lambda0[stream]));
 
                 // E
                 E.Add(GaussMethod.Solve(GetExtendedMatrix(stream)));
@@ -245,10 +245,16 @@ namespace Modeling
             {
                 var elements = rows[i].Split(';').Select(element => element.Trim()).ToList();
 
-                var n = elements.Count(element => element.Contains("-"));
+                var dashesCount = elements.Count(element => element.Contains("-"));
                 var value = 0.0;
-                if(n != 0)
-                    value = (1 - double.Parse(elements[0])) / n;
+				if(dashesCount != 0)
+				{
+					if (dashesCount == elements.Count)
+						value = 1 / dashesCount;
+					else 
+						value = (1 - elements.Where(element => !element.Contains("-")).Sum(prob => double.Parse(prob)))
+							/ dashesCount;
+				}
 
                 var row = elements.Select(element => element.Contains("-") ?
                     value :
