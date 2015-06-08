@@ -135,12 +135,12 @@ namespace Types
             return this;
         }
 
-        public T[] GetArray()
+        public T[] ToArray()
         {
             return _vector.ToArray();
         }
 
-        public List<T> GetList()
+        public List<T> ToList()
         {
             return _vector;
         }

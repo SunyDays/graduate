@@ -17,14 +17,20 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{573F05BC-4117-43DC-91AF-14A544690CD6}.Debug|x86.ActiveCfg = Debug|x86
 		{573F05BC-4117-43DC-91AF-14A544690CD6}.Debug|x86.Build.0 = Debug|x86
+		{573F05BC-4117-43DC-91AF-14A544690CD6}.Release|x86.ActiveCfg = Release|x86
+		{573F05BC-4117-43DC-91AF-14A544690CD6}.Release|x86.Build.0 = Release|x86
 		{8E39CF8A-3018-4643-BF6A-23E216583EF8}.Debug|x86.ActiveCfg = Debug|x86
 		{8E39CF8A-3018-4643-BF6A-23E216583EF8}.Debug|x86.Build.0 = Debug|x86
+		{8E39CF8A-3018-4643-BF6A-23E216583EF8}.Release|x86.ActiveCfg = Release|x86
+		{8E39CF8A-3018-4643-BF6A-23E216583EF8}.Release|x86.Build.0 = Release|x86
 		{B5EA0C75-62E6-44A4-B6A2-FF237DD3EEC1}.Debug|x86.ActiveCfg = Debug|x86
 		{B5EA0C75-62E6-44A4-B6A2-FF237DD3EEC1}.Debug|x86.Build.0 = Debug|x86
 		{B5EA0C75-62E6-44A4-B6A2-FF237DD3EEC1}.Release|x86.ActiveCfg = Release|x86
 		{B5EA0C75-62E6-44A4-B6A2-FF237DD3EEC1}.Release|x86.Build.0 = Release|x86
 		{C512C052-34C2-4D62-8C30-C3396537CCAD}.Debug|x86.ActiveCfg = Debug|x86
 		{C512C052-34C2-4D62-8C30-C3396537CCAD}.Debug|x86.Build.0 = Debug|x86
+		{C512C052-34C2-4D62-8C30-C3396537CCAD}.Release|x86.ActiveCfg = Release|x86
+		{C512C052-34C2-4D62-8C30-C3396537CCAD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

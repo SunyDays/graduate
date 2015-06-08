@@ -281,7 +281,7 @@ namespace Types
         {
             var transposeMatrix = new Matrix<T>(ColumnsCount, 1);
             _matrix.ForEach(row => transposeMatrix.AddColumn(row));
-            _matrix = transposeMatrix.RemoveColumn(0).GetList();
+			_matrix = transposeMatrix.RemoveColumn(0).ToList();
 
             var rowsCount = RowsCount;
             RowsCount = ColumnsCount;
@@ -290,7 +290,7 @@ namespace Types
             return this;
         }
 
-        public T[,] GetArray()
+        public T[,] ToArray()
         {
             var array = new T[RowsCount, ColumnsCount];
             for (int r = 0; r < RowsCount; r++)
@@ -300,7 +300,7 @@ namespace Types
             return array;
         }
 
-        public List<Vector<T>> GetList()
+        public List<Vector<T>> ToList()
         {
             return _matrix;
         }

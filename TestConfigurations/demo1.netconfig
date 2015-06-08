@@ -1,18 +1,16 @@
 <NetworkConfiguration Name="Linear topology">
 	<RoutingMatrix>
-		<Row>0;		-;		-;		-;		-		</Row>
-		<Row>0.25; 	0; 		0.75; 	0;		0		</Row>
-		<Row>0.25;	0.375;	0;		0.375;	0		</Row>
-		<Row>0.25;	0;		0.375;	0;		0.375	</Row>
-		<Row>0.25;	0;		0;		0.75;	0		</Row>
+		<Row>0; -; -; -; -</Row>
+		<Row>-; 0; -; 0; 0</Row>
+		<Row>-;	-; 0; -; 0</Row>
+		<Row>-;	0; -; 0; -</Row>
+		<Row>-;	0; 0; -; 0</Row>
 	</RoutingMatrix>
 
 	<Nodes Count="4">
-		<Stream Index="0">
-			<Lambda>17; 14; 13; 16</Lambda>
-			<Mu>
-    			<Ethernet Type="Gigabit" FrameLength="Max"/>
-			</Mu>
-		</Stream>
+		<Lambda>25</Lambda>
+		<Mu>
+			<Ethernet Type="Gigabit" FrameLength="Max"/>
+		</Mu>
 	</Nodes>
 </NetworkConfiguration>

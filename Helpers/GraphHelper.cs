@@ -41,17 +41,5 @@ namespace Helpers
 
             return paths;
         }
-
-		public static List<Vector<int>> GetAllPaths(Matrix<double> matrix)
-		{
-			var paths = new List<Vector<int>>();
-
-			for (int startNode = 0; startNode < matrix.RowsCount; startNode++)
-				for (int targetNode = 0; targetNode < matrix.RowsCount; targetNode++)
-					if (startNode != targetNode)
-						paths.AddRange(GetPathsBetween(matrix, startNode, targetNode));
-
-			return paths;
-		}
     }
 }

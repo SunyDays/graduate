@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Helpers;
 using Types;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Modeling
 {
@@ -25,7 +26,9 @@ namespace Modeling
         public List<Vector<double>> Ro              { get; private set; }
         public List<Vector<double>> RoBar           { get; private set; }
         public Vector<double> RoTotal               { get; private set; }
-		public List<Vector<int>> AllPaths           { get; private set; }
+		public double AveragePaths                  { get; private set; }
+		public Vector<int> MinPath                  { get; private set; }
+		public Vector<int> MaxPath                  { get; private set; }
 		public List<Vector<int>> Paths              { get; private set; }
         public List<double> TransitionProbabilities { get; private set; }
 
@@ -60,6 +63,8 @@ namespace Modeling
             RoBar = new List<Vector<double>>();
             RoTotal = new Vector<double>();
 
+			AveragePaths = 0;
+
             Ws = new Vector<double>();
             Us = new List<Vector<double>>();
             Ls = new List<Vector<double>>();
@@ -69,8 +74,7 @@ namespace Modeling
             Ni = new List<double>();
         }
 
-        public NetworkModel(String path, int startNode, int targetNode)
-            : this(startNode, targetNode)
+        public NetworkModel(String path, int startNode, int targetNode) : this(startNode, targetNode)
         {
             ParseConfig(path);
 
@@ -116,11 +120,39 @@ namespace Modeling
 
             if (RoTotal.Any(roTotal => roTotal > 1))
                 throw new ArgumentOutOfRangeException("RoTotal", "Some RoTotal is greater than zero.");
-
-			AllPaths = GraphHelper.GetAllPaths(RoutingMatrix.Clone().RemoveColumn(0))
-				.OrderBy(path => path.Length).ToList();
-			Paths = AllPaths.Where(path => path.First() == StartNode && path.Last() == TargetNode).ToList();
+			
+			FindPaths();
         }
+
+		public void FindPaths()
+		{
+			var matrix = RoutingMatrix.Clone().RemoveColumn(0);
+			var pathsCount = 0;
+			var pairsCount = 0;
+
+			for (int startNode = 0; startNode < matrix.RowsCount; startNode++)
+				for (int targetNode = 0; targetNode < matrix.RowsCount; targetNode++)
+					if (startNode != targetNode)
+					{	
+						var paths = GraphHelper.GetPathsBetween(matrix.Clone(), startNode, targetNode);
+						if (paths.Count == 0)
+							continue;
+
+						if(startNode == StartNode && targetNode == TargetNode)
+							Paths = paths;
+
+						pathsCount += paths.Count();
+						pairsCount++;							
+
+						if (MinPath == null || paths.Min().Length < MinPath.Length)
+							MinPath = paths.Min();
+						if (MaxPath == null || paths.Max().Length > MaxPath.Length)
+							MaxPath = paths.Max();
+					}
+
+			Paths.Sort();
+			AveragePaths = pathsCount / pairsCount;
+		}
 
         private Matrix<double> GetExtendedMatrix(int streamIndex)
         {
@@ -266,9 +298,9 @@ namespace Modeling
             }
 
             var wrongRowsIndeces = RoutingMatrix.Select((row, index) => new {row, index})
-                .Where(anon => !anon.row.Sum().Equals(1.0))
+				.Where(anon => !((float)anon.row.Sum()).Equals(1.0f))
                 .Aggregate(string.Empty,
-                    (wrongRows, index) => wrongRows + string.Format("{0} ,", index));
+					(accumulate, anon) => string.Format("{0} ,", anon.index));
 
             if(wrongRowsIndeces != string.Empty)
                 throw new ArgumentOutOfRangeException(String.Format("RoutingMatrix, rows {0}", wrongRowsIndeces),
@@ -277,19 +309,20 @@ namespace Modeling
 
         private void ParseNodes(XContainer root)
         {
-            StreamsCount = GetElements(root, "Stream")
-                .Max(element => int.Parse(element.Attribute("Index").Value)) + 1;
+			var streamElements = GetElements(root, "Stream");
+			StreamsCount = streamElements.Count == 0 ? 1:
+				streamElements.Max(element => int.Parse(element.Attribute("Index").Value)) + 1;
 
             NodesCount = GetAttributeValue<int>(GetElement(root, "Nodes"), "Count");
 
             for (int stream = 0; stream < StreamsCount; stream++)
             {
                 Mu.Add(new Vector<double>(
-                    ParseMu(GetElements(root, "Mu")
+					ParseMu( StreamsCount == 1? GetElement(root, "Mu") : GetElements(root, "Mu")
                         .Single(element => GetAttributeValue<int>(element.Parent, "Index") == stream))));
 
                     Lambda.Add(new Vector<double>(
-                            ParseLambda(GetElements(root, "Lambda")
+					ParseLambda( StreamsCount == 1 ? GetElement(root, "Lambda") : GetElements(root, "Lambda")
                         .Single(element => GetAttributeValue<int>(element.Parent, "Index") == stream), stream)));
 
                 Ro.Add(Lambda.Last().DivideElementWise(Mu.Last()));
@@ -301,11 +334,11 @@ namespace Modeling
         private IEnumerable<double> ParseLambda(XElement element, int stream)
         {
             return element.Value.ToLower().Contains("rand") ?
-            // FIXME: some RoBar > 1. random values must be under control
             Enumerable.Range(0, NodesCount).Select(index => (double)random.Next(1, (int)Math.Floor(Mu[stream][index]))) :
 
-            element.Value.ToLower().Contains(";") ?
+            element.Value.Contains(";") ?
             element.Value.Split(';').Select(lambda => double.Parse(lambda.Trim())) :
+				element.Value.Contains("%") ? Mu[stream].Multiply( double.Parse( element.Value.Trim().TrimEnd(new[] { '%' }) ) / 100 ) : 
             Enumerable.Repeat(double.Parse(element.Value), NodesCount);
         }
 
@@ -338,7 +371,7 @@ namespace Modeling
 
         private List<XElement> GetElements(XContainer element, String elementName)
         {
-            return element.Descendants(elementName).ToList();
+			return element.Descendants(elementName).ToList();
         }
 
         private XElement GetElement(XContainer element, string elementName)

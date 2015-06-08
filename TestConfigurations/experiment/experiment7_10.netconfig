@@ -1,0 +1,38 @@
+<NetworkConfiguration Name="Full-mesh topology">
+	<RoutingMatrix>
+		<Row>0; -; -; -; -; -; -; -; -; -; -</Row>
+		<Row>-; 0; -; -; -; -; -; -; -; -; -</Row>
+		<Row>-; -; 0; -; -; -; -; -; -; -; -</Row>
+		<Row>-; -; -; 0; -; -; -; -; -; -; -</Row>
+		<Row>-; -; -; -; 0; -; -; -; -; -; -</Row>
+		<Row>-; -; -; -; -; 0; -; -; -; -; -</Row>
+		<Row>-; -; -; -; -; -; 0; -; -; -; -</Row>
+		<Row>-; -; -; -; -; -; -; 0; -; -; -</Row>
+		<Row>-; -; -; -; -; -; -; -; 0; -; -</Row>
+		<Row>-; -; -; -; -; -; -; -; -; 0; -</Row>
+		<Row>-; -; -; -; -; -; -; -; -; -; 0</Row>
+	</RoutingMatrix>
+
+	<Nodes Count="10">
+		<Lambda>7%</Lambda>
+		<Mu>
+			<Ethernet Type="_10G" FrameLength="Max"/>
+		</Mu>
+	</Nodes>
+</NetworkConfiguration>
+
+<!--
+	<RoutingMatrix>
+		<Row>0; -; -; -; -; -; -; -; -; -; -</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+		<Row>-; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0</Row>
+	</RoutingMatrix>
+-->
