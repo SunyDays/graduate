@@ -151,7 +151,7 @@ namespace Modeling
 					}
 
 			Paths.Sort();
-			AveragePaths = pathsCount / pairsCount;
+			AveragePaths = (double)pathsCount / pairsCount;
 		}
 
         private Matrix<double> GetExtendedMatrix(int streamIndex)
@@ -273,6 +273,8 @@ namespace Modeling
         private void ParseRoutingMatrix(XContainer root)
         {
             var rows = GetElements(root, "Row").Skip(1).Select(row => row.Value).ToList();
+			NodesCount = rows.Count;
+
             for (int i = 0; i < rows.Count(); i++)
             {
                 var elements = rows[i].Split(';').Select(element => element.Trim()).ToList();
@@ -312,8 +314,6 @@ namespace Modeling
 			var streamElements = GetElements(root, "Stream");
 			StreamsCount = streamElements.Count == 0 ? 1:
 				streamElements.Max(element => int.Parse(element.Attribute("Index").Value)) + 1;
-
-            NodesCount = GetAttributeValue<int>(GetElement(root, "Nodes"), "Count");
 
             for (int stream = 0; stream < StreamsCount; stream++)
             {

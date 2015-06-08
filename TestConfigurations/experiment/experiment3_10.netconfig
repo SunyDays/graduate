@@ -14,7 +14,7 @@
 	</RoutingMatrix>
 
 	<Nodes Count="10">
-		<Lambda>27%</Lambda>
+		<Lambda>7%</Lambda>
 		<Mu>
 			<Ethernet Type="_10G" FrameLength="Max"/>
 		</Mu>

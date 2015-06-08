@@ -35,20 +35,19 @@ namespace NetModeling
 				var startNodeIndex = args.GetArgValue<int>("startnode");
 				var targetNodeIndex = args.GetArgValue<int>("targetnode");
 
-				string logFile = args.ContainsArg("log") ?
-					Path.Combine(Path.GetDirectoryName(netconfig), "logs",
-						Path.GetFileNameWithoutExtension(netconfig) + ".log")
-					: null;
-
 				var networkModel = new NetworkModel(netconfig, startNodeIndex, targetNodeIndex);
-				Output(networkModel, logFile, args.ContainsArg("matrix"));
 
+				if(args.ContainsArg("console"))
+					ConsoleOutput(networkModel, args.ContainsArg("matrix"));
+				else
+					ConsoleColorWrite("OK", ConsoleColor.Green);
+				if(args.ContainsArg("log"))
+					LogOutput(networkModel,
+						Path.Combine(Path.GetDirectoryName(netconfig), "logs",
+						Path.GetFileNameWithoutExtension(netconfig) + ".log"),
+						args.ContainsArg("matrix"));
 				if(args.ContainsArg("graph"))
 					PlotDensity(networkModel);
-
-				#if !DEBUG
-					Console.ReadLine();
-				#endif
 			}
 			catch(Exception ex)
 			{
@@ -91,14 +90,6 @@ namespace NetModeling
 				yield return val;
 		}
 
-		public static void Output(NetworkModel networkModel, string logFile, bool matrixOutput)
-		{
-			ConsoleOutput(networkModel, matrixOutput);
-
-			if (logFile != null)
-				LogOutput(networkModel, logFile, matrixOutput);
-		}
-
 		public static void ConsoleOutput(NetworkModel networkModel, bool matrixOutput)
 		{
 			Console.ForegroundColor = ConsoleColor.White;
@@ -130,7 +121,7 @@ namespace NetModeling
 					Console.Write(Environment.NewLine);	
 				}
 
-				ConsoleColorWrite("LAMBDA\t\t\t\t\tMU\t\t\t\t\tRO", ConsoleColor.Green);
+				ConsoleColorWrite("LAMBDA\t\t\t\tMU\t\t\t\tRO", ConsoleColor.Green);
 				for (int i = 0; i < networkModel.NodesCount; i++)
 					Console.WriteLine("{0:0.000000}\t\t\t{1:0.000000}\t\t\t{2:0.000000}",
 						networkModel.Lambda[stream][i], networkModel.Mu[stream][i], networkModel.Ro[stream][i]);
@@ -148,7 +139,7 @@ namespace NetModeling
 
 				Console.Write(Environment.NewLine);
 
-				ConsoleColorWrite("LAMBDA'\t\t\t\t\tRO'", ConsoleColor.Green);
+				ConsoleColorWrite("LAMBDA'\t\t\t\tRO'", ConsoleColor.Green);
 				for (int i = 0; i < networkModel.NodesCount; i++)
 					Console.WriteLine("{0:0.000000}\t\t\t{1:0.000000}",
 						networkModel.LambdaBar[stream][i], networkModel.RoBar[stream][i]);
@@ -176,7 +167,7 @@ namespace NetModeling
 
 				Console.Write(Environment.NewLine);
 
-				ConsoleColorWrite("U\t\t\t\t\tL\t\t\t\t\tN", ConsoleColor.Green);
+				ConsoleColorWrite("U\t\t\t\tL\t\t\t\tN", ConsoleColor.Green);
 				for (int i = 0; i < networkModel.NodesCount; i++)
 					Console.WriteLine("{0:0.000000}\t\t\t{1:0.000000}\t\t\t{2:0.000000}",
 						networkModel.Us[stream][i], networkModel.Ls[stream][i], networkModel.Ns[stream][i]);
@@ -192,11 +183,11 @@ namespace NetModeling
 				Console.Write(Environment.NewLine);
 
 				ConsoleColorWrite("W", ConsoleColor.Green);
-				Console.WriteLine(networkModel.Wi);
+				Console.WriteLine(string.Format("{0:0.000000}", networkModel.Wi ));
 
 				Console.Write(Environment.NewLine);
 
-				ConsoleColorWrite("U\t\t\t\t\tL\t\t\t\t\tN", ConsoleColor.Green);
+				ConsoleColorWrite("U\t\t\t\tL\t\t\t\tN", ConsoleColor.Green);
 				Console.WriteLine("{0:0.000000}\t\t\t{1:0.000000}\t\t\t{2:0.000000}",
 					networkModel.Ui[stream], networkModel.Li[stream], networkModel.Ni[stream]);
 
@@ -312,7 +303,7 @@ namespace NetModeling
 				data.Add(Environment.NewLine);
 
 				data.Add("W");
-				data.Add(networkModel.Wi.ToString());
+				data.Add(string.Format("{0:0.000000}", networkModel.Wi));
 
 				data.Add(Environment.NewLine);
 

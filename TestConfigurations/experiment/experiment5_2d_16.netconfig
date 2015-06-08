@@ -19,7 +19,7 @@
 		<Row>-; 0; 0; 0; 0; 0; 0; 0; -; 0; -; 0; 0; 0; 0; 0; 0</Row>
 	</RoutingMatrix>
 
-	<Nodes Count="10">
+	<Nodes>
 		<Lambda>7%</Lambda>
 		<Mu>
 			<Ethernet Type="_10G" FrameLength="Max"/>
