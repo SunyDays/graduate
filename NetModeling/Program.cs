@@ -62,7 +62,7 @@ namespace NetModeling
 
 		public static void PlotDensity(NetworkModel networkModel)
 		{
-			var t = CreateRange(0, 0.03, 0.0001);
+			var t = CreateRange(0, 0.0022, 0.00001);
 			var data = new List<Vector<double>>();
 			var labels = new List<string>();
 

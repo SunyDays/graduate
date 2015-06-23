@@ -1,0 +1,16 @@
+<NetworkConfiguration Name="Full-mesh topology">
+	<RoutingMatrix>
+		<Row>0;		-;		-;		-;		-</Row>
+		<Row>0.25;	0;		0.25;	0.25;	0.25</Row>
+		<Row>0.25;	0.25;	0;		0.25;	0.25</Row>
+		<Row>0.25;	0.25;	0.25;	0;		0.25</Row>
+		<Row>0.25;	0.25;	0.25;	0.25;	0</Row>
+	</RoutingMatrix>
+
+	<Nodes Count="4">
+        <Lambda>860; 930; 670; 710</Lambda>
+        <Mu>
+            <Ethernet Type="_10G" FrameLength="128"/>
+        </Mu>
+	</Nodes>
+</NetworkConfiguration>

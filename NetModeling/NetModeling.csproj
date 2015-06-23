@@ -19,18 +19,17 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/experiment/experiment5_2d_16.netconfig" /startnode:0 /targetnode:15 /log /console</Commandlineparameters>
+    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/experiment/demo4_b.netconfig" /startnode:0 /targetnode:15 /log /console /graph</Commandlineparameters>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/demo4.netconfig" /startnode:0 /targetnode:3 /log /console</Commandlineparameters>
+    <Commandlineparameters>/netconfig:"/home/sunydays/Documents/Monodevelop/GraduationProject/TestConfigurations/demo4.netconfig" /startnode:0 /targetnode:3 /log /console /graph</Commandlineparameters>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
